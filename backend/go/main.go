@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ddoalistdownload/backend/config"
+	"github.com/ddoalistdownload/backend/controller"
 	"github.com/ddoalistdownload/backend/database"
 	"github.com/ddoalistdownload/backend/middleware"
 	"github.com/gin-gonic/gin"
@@ -82,14 +83,15 @@ func registerRoutes(router *gin.Engine) {
 	// 健康检查
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status": "ok",
+			"status":  "ok",
 			"message": "DdOaListDownload 服务运行正常",
 		})
 	})
 
-	// 初始化服务
-	companyService := service.NewCompanyService()
-	companyController := controller.NewCompanyController(companyService)
+	// 初始化服务和控制器
+	companyController := controller.NewCompanyController()
+	accessTokenController := controller.NewAccessTokenController()
+	ssoController := controller.NewSSOController()
 
 	// API分组
 	api := router.Group("/api/v1")
@@ -103,66 +105,20 @@ func registerRoutes(router *gin.Engine) {
 		company.DELETE("/:id", companyController.Delete)
 		company.GET("/tree", companyController.GetTree)
 
-		// 其他模块路由注册
-		// TODO: 注册其他模块的路由
-		// 用户认证
-		// api.POST("/login", authController.Login)
-		// api.POST("/logout", authController.Logout)
-		// api.GET("/me", authController.GetCurrentUser)
-
 		// 身份验证（免登）
-		// sso := api.Group("/sso")
-		// sso.GET("/config", ssoController.GetConfig)
-		// sso.POST("/config", ssoController.UpdateConfig)
-		// sso.GET("/test", ssoController.TestSSO)
+		sso := api.Group("/sso")
+		sso.GET("/config", ssoController.GetConfig)
+		sso.POST("/config", ssoController.UpdateConfig)
+		sso.GET("/test", ssoController.TestSSO)
 
-		// accessToken管理
-		// accessToken := api.Group("/access-token")
-		// accessToken.GET("/config", accessTokenController.GetConfig)
-		// accessToken.POST("/config", accessTokenController.UpdateConfig)
-		// accessToken.GET("/refresh", accessTokenController.RefreshToken)
-		// accessToken.GET("/status", accessTokenController.GetStatus)
-
-		// 权限管理
-		// user := api.Group("/user")
-		// user.GET("", userController.List)
-		// user.POST("", userController.Create)
-		// user.GET("/:id", userController.Get)
-		// user.PUT("/:id", userController.Update)
-		// user.DELETE("/:id", userController.Delete)
-
-		// 角色管理
-		// role := api.Group("/role")
-		// role.GET("", roleController.List)
-		// role.POST("", roleController.Create)
-		// role.GET("/:id", roleController.Get)
-		// role.PUT("/:id", roleController.Update)
-		// role.DELETE("/:id", roleController.Delete)
-
-		// 菜单管理
-		// menu := api.Group("/menu")
-		// menu.GET("", menuController.List)
-		// menu.POST("", menuController.Create)
-		// menu.GET("/:id", menuController.Get)
-		// menu.PUT("/:id", menuController.Update)
-		// menu.DELETE("/:id", menuController.Delete)
-
-		// API配置管理
-		// apiConfig := api.Group("/api-config")
-		// apiConfig.GET("", apiConfigController.List)
-		// apiConfig.POST("", apiConfigController.Create)
-		// apiConfig.GET("/:id", apiConfigController.Get)
-		// apiConfig.PUT("/:id", apiConfigController.Update)
-		// apiConfig.DELETE("/:id", apiConfigController.Delete)
-
-		// API测试
-		// apiTest := api.Group("/api-test")
-		// apiTest.POST("/debug", apiTestController.Debug)
-		// apiTest.GET("/history", apiTestController.GetHistory)
-
-		// 下载功能
-		// download := api.Group("/download")
-		// download.GET("/list", downloadController.GetList)
-		// download.POST("/export", downloadController.ExportData)
+		// AccessToken管理
+		accessToken := api.Group("/access-token")
+		accessToken.GET("", accessTokenController.GetAccessToken)
+		accessToken.POST("", accessTokenController.CreateAccessToken)
+		accessToken.PUT("/:id", accessTokenController.UpdateAccessToken)
+		accessToken.DELETE("/:id", accessTokenController.DeleteAccessToken)
+		accessToken.GET("/list", accessTokenController.GetAccessTokenList)
+		accessToken.POST("/refresh", accessTokenController.RefreshAccessToken)
+		accessToken.POST("/test", accessTokenController.TestAccessToken)
 	}
 }

@@ -14,9 +14,9 @@ type CompanyController struct {
 }
 
 // NewCompanyController 创建集团公司控制器
-func NewCompanyController(companyService *service.CompanyService) *CompanyController {
+func NewCompanyController() *CompanyController {
 	return &CompanyController{
-		companyService: companyService,
+		companyService: service.NewCompanyService(),
 	}
 }
 
