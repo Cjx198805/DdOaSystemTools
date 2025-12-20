@@ -1,0 +1,15 @@
+# Python 服务依赖
+# Web 框架
+Flask==3.0.0
+# 数据库
+SQLAlchemy==2.0.23
+pymysql==1.1.0
+# Redis
+redis==5.0.1
+# 钉钉 SDK
+dingtalk-sdk-python==1.5.0
+# 日志
+python-dotenv==1.0.0
+# 工具库
+requests==2.31.0
+python-dateutil==2.8.2
