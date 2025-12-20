@@ -92,6 +92,7 @@ func registerRoutes(router *gin.Engine) {
 	companyController := controller.NewCompanyController()
 	accessTokenController := controller.NewAccessTokenController()
 	ssoController := controller.NewSSOController()
+	apiConfigController := controller.NewAPIConfigController()
 
 	// API分组
 	api := router.Group("/api/v1")
@@ -120,5 +121,14 @@ func registerRoutes(router *gin.Engine) {
 		accessToken.GET("/list", accessTokenController.GetAccessTokenList)
 		accessToken.POST("/refresh", accessTokenController.RefreshAccessToken)
 		accessToken.POST("/test", accessTokenController.TestAccessToken)
+
+		// API配置管理
+		apiConfig := api.Group("/api-config")
+		apiConfig.GET("", apiConfigController.List)
+		apiConfig.POST("", apiConfigController.Create)
+		apiConfig.GET("/:id", apiConfigController.Get)
+		apiConfig.PUT("/:id", apiConfigController.Update)
+		apiConfig.DELETE("/:id", apiConfigController.Delete)
+		apiConfig.POST("/test", apiConfigController.Test)
 	}
 }
