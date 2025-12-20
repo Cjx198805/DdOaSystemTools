@@ -21,6 +21,8 @@ func MigrateDB() error {
 		&model.AccessToken{},
 		&model.APIConfig{},
 		&model.Log{},
+		&model.FieldPermission{},
+		&model.DataDictionary{},
 	)
 
 	if err != nil {

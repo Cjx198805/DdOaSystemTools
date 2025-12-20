@@ -93,6 +93,11 @@ func registerRoutes(router *gin.Engine) {
 	accessTokenController := controller.NewAccessTokenController()
 	ssoController := controller.NewSSOController()
 	apiConfigController := controller.NewAPIConfigController()
+	userController := controller.NewUserController()
+	roleController := controller.NewRoleController()
+	menuController := controller.NewMenuController()
+	fieldPermissionController := controller.NewFieldPermissionController()
+	dataDictionaryController := controller.NewDataDictionaryController()
 
 	// API分组
 	api := router.Group("/api/v1")
@@ -130,5 +135,58 @@ func registerRoutes(router *gin.Engine) {
 		apiConfig.PUT("/:id", apiConfigController.Update)
 		apiConfig.DELETE("/:id", apiConfigController.Delete)
 		apiConfig.POST("/test", apiConfigController.Test)
+
+		// 用户管理
+		user := api.Group("/user")
+		user.GET("", userController.List)
+		user.POST("", userController.Create)
+		user.GET("/:id", userController.Get)
+		user.PUT("/:id", userController.Update)
+		user.DELETE("/:id", userController.Delete)
+		user.PUT("/:id/reset-password", userController.ResetPassword)
+		user.PUT("/update-password", userController.UpdatePassword)
+		user.GET("/:id/roles", userController.GetRoles)
+		user.PUT("/:id/assign-roles", userController.AssignRoles)
+		user.POST("/login", userController.Login)
+
+		// 角色管理
+		role := api.Group("/role")
+		role.GET("", roleController.List)
+		role.POST("", roleController.Create)
+		role.GET("/:id", roleController.Get)
+		role.PUT("/:id", roleController.Update)
+		role.DELETE("/:id", roleController.Delete)
+		role.GET("/:id/menus", roleController.GetMenus)
+		role.PUT("/:id/assign-menus", roleController.AssignMenus)
+
+		// 菜单管理
+		menu := api.Group("/menu")
+		menu.GET("", menuController.List)
+		menu.POST("", menuController.Create)
+		menu.GET("/:id", menuController.Get)
+		menu.PUT("/:id", menuController.Update)
+		menu.DELETE("/:id", menuController.Delete)
+		menu.GET("/tree", menuController.GetTree)
+		menu.GET("/parent/:parent_id", menuController.GetByParentID)
+		menu.GET("/all", menuController.GetAll)
+
+		// 字段权限管理
+		fieldPermission := api.Group("/field-permission")
+		fieldPermission.GET("", fieldPermissionController.List)
+		fieldPermission.POST("", fieldPermissionController.Create)
+		fieldPermission.GET("/:id", fieldPermissionController.Get)
+		fieldPermission.PUT("/:id", fieldPermissionController.Update)
+		fieldPermission.DELETE("/:id", fieldPermissionController.Delete)
+		fieldPermission.GET("/role/:role_id/module/:module", fieldPermissionController.GetByRoleAndModule)
+
+		// 数据字典管理
+		dataDictionary := api.Group("/data-dictionary")
+		dataDictionary.GET("", dataDictionaryController.List)
+		dataDictionary.POST("", dataDictionaryController.Create)
+		dataDictionary.GET("/:id", dataDictionaryController.Get)
+		dataDictionary.PUT("/:id", dataDictionaryController.Update)
+		dataDictionary.DELETE("/:id", dataDictionaryController.Delete)
+		dataDictionary.GET("/module/:module", dataDictionaryController.GetByModule)
+		dataDictionary.GET("/module/:module/field/:field", dataDictionaryController.GetByModuleAndField)
 	}
 }
