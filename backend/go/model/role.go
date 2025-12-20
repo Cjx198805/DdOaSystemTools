@@ -13,20 +13,13 @@ type Role struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt *time.Time `gorm:"index" json:"deleted_at,omitempty"`
+	
+	// 关联关系
+	Users     []User     `gorm:"many2many:user_role;" json:"users,omitempty"`
+	UserRoles []UserRole `gorm:"foreignKey:RoleID" json:"user_roles,omitempty"`
 }
 
 // TableName 设置表名
 func (Role) TableName() string {
 	return "role"
-}
-
-// UserRole 用户角色关联模型
-type UserRole struct {
-	UserID uint `gorm:"primaryKey" json:"user_id"`
-	RoleID uint `gorm:"primaryKey" json:"role_id"`
-}
-
-// TableName 设置表名
-func (UserRole) TableName() string {
-	return "user_role"
 }

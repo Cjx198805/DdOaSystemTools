@@ -16,13 +16,12 @@ var (
 
 // InitMySQL 初始化MySQL连接
 func InitMySQL(cfg *config.MySQLConfig) error {
-	// 构建DSN（Data Source Name）
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local",
+	// 先连接到MySQL服务器，不指定数据库名
+	rootDSN := fmt.Sprintf("%s:%s@tcp(%s:%s)/?charset=%s&parseTime=True&loc=Local",
 		cfg.Username,
 		cfg.Password,
 		cfg.Host,
 		cfg.Port,
-		cfg.DBName,
 		cfg.Charset,
 	)
 
@@ -36,12 +35,46 @@ func InitMySQL(cfg *config.MySQLConfig) error {
 		},
 	)
 
-	// 连接数据库
+	// 连接到MySQL服务器
+	rootDB, err := gorm.Open(mysql.Open(rootDSN), &gorm.Config{
+		Logger: newLogger,
+	})
+	if err != nil {
+		logrus.Errorf("连接MySQL服务器失败: %v", err)
+		return err
+	}
+
+	// 创建数据库
+	createDB := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s CHARACTER SET %s COLLATE %s_unicode_ci;",
+		cfg.DBName,
+		cfg.Charset,
+		cfg.Charset,
+	)
+	if err := rootDB.Exec(createDB).Error; err != nil {
+		logrus.Errorf("创建数据库失败: %v", err)
+		return err
+	}
+
+	// 关闭临时连接
+	sqlRootDB, _ := rootDB.DB()
+	sqlRootDB.Close()
+
+	// 构建完整DSN（包含数据库名）
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local",
+		cfg.Username,
+		cfg.Password,
+		cfg.Host,
+		cfg.Port,
+		cfg.DBName,
+		cfg.Charset,
+	)
+
+	// 连接到指定数据库
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: newLogger,
 	})
 	if err != nil {
-		logrus.Errorf("连接MySQL失败: %v", err)
+		logrus.Errorf("连接数据库失败: %v", err)
 		return err
 	}
 

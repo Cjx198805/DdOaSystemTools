@@ -23,6 +23,10 @@ func MigrateDB() error {
 		&model.Log{},
 		&model.FieldPermission{},
 		&model.DataDictionary{},
+		&model.DownloadTask{},
+		&model.DownloadResult{},
+		&model.APITestCase{},
+		&model.APITestHistory{},
 	)
 
 	if err != nil {

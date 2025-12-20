@@ -54,7 +54,7 @@ func LoadConfig() *Config {
 			Host:     getEnv("MYSQL_HOST", "localhost"),
 			Port:     getEnv("MYSQL_PORT", "3306"),
 			Username: getEnv("MYSQL_USERNAME", "root"),
-			Password: getEnv("MYSQL_PASSWORD", "password"),
+			Password: getEnv("MYSQL_PASSWORD", "root"),
 			DBName:   getEnv("MYSQL_DBNAME", "dd_oa_download"),
 			Charset:  getEnv("MYSQL_CHARSET", "utf8mb4"),
 		},

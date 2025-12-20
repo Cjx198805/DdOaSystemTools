@@ -48,9 +48,14 @@ func (s *UserService) List(page, pageSize int, companyID uint, username, nicknam
 	
 	// 分页查询
 	offset := (page - 1) * pageSize
-	if err := query.Preload("Company").Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&users).Error; err != nil {
+	if err := query.Preload("Company").Preload("Roles").Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&users).Error; err != nil {
 		logrus.Errorf("获取用户列表失败: %v", err)
 		return nil, 0, err
+	}
+	
+	// 清空密码
+	for i := range users {
+		users[i].Password = ""
 	}
 	
 	return users, total, nil
@@ -61,7 +66,7 @@ func (s *UserService) Get(id uint) (*model.User, error) {
 	db := database.GetDB()
 	
 	var user model.User
-	if err := db.Preload("Company").First(&user, id).Error; err != nil {
+	if err := db.Preload("Company").Preload("Roles").First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("用户不存在")
 		}

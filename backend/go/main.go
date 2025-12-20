@@ -98,6 +98,8 @@ func registerRoutes(router *gin.Engine) {
 	menuController := controller.NewMenuController()
 	fieldPermissionController := controller.NewFieldPermissionController()
 	dataDictionaryController := controller.NewDataDictionaryController()
+	downloadTaskController := controller.NewDownloadTaskController()
+	apiTestController := controller.NewAPITestController()
 
 	// API分组
 	api := router.Group("/api/v1")
@@ -188,5 +190,33 @@ func registerRoutes(router *gin.Engine) {
 		dataDictionary.DELETE("/:id", dataDictionaryController.Delete)
 		dataDictionary.GET("/module/:module", dataDictionaryController.GetByModule)
 		dataDictionary.GET("/module/:module/field/:field", dataDictionaryController.GetByModuleAndField)
+
+		// 下载任务管理
+		downloadTask := api.Group("/download-task")
+		downloadTask.GET("", downloadTaskController.List)
+		downloadTask.POST("", downloadTaskController.Create)
+		downloadTask.GET("/user/:user_id", downloadTaskController.GetTaskByUserID)
+		downloadTask.GET("/result/:task_id", downloadTaskController.GetResult)
+		downloadTask.GET("/:id", downloadTaskController.Get)
+		downloadTask.DELETE("/:id", downloadTaskController.Delete)
+
+		// API测试管理
+		apiTest := api.Group("/api-test")
+		
+		// 测试用例相关路由
+		testCase := apiTest.Group("/case")
+		testCase.GET("", apiTestController.ListTestCases)
+		testCase.POST("", apiTestController.CreateTestCase)
+		testCase.GET("/:id", apiTestController.GetTestCase)
+		testCase.PUT("/:id", apiTestController.UpdateTestCase)
+		testCase.DELETE("/:id", apiTestController.DeleteTestCase)
+		testCase.POST("/:id/run", apiTestController.RunTestCase)
+		
+		// 测试历史记录相关路由
+		testHistory := apiTest.Group("/history")
+		testHistory.GET("", apiTestController.ListTestHistory)
+		testHistory.GET("/:id", apiTestController.GetTestHistory)
+		testHistory.DELETE("/:id", apiTestController.DeleteTestHistory)
+		testHistory.POST("/clear", apiTestController.ClearTestHistory)
 	}
 }

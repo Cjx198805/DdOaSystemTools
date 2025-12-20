@@ -20,6 +20,8 @@ type User struct {
 	
 	// 关联关系
 	Company   Company    `gorm:"foreignKey:CompanyID" json:"company"`
+	Roles     []Role     `gorm:"many2many:user_role;" json:"roles,omitempty"`
+	UserRoles []UserRole `gorm:"foreignKey:UserID" json:"user_roles,omitempty"`
 }
 
 // TableName 设置表名
