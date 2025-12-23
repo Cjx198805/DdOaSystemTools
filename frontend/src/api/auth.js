@@ -3,7 +3,7 @@ import service from './index'
 const authApi = {
   // 登录
   login(data) {
-    return service.post('/auth/login', data)
+    return service.post('/user/login', data)
   },
   // 获取用户信息
   getUserInfo() {

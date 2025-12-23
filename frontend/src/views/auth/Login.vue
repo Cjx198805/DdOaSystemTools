@@ -1,32 +1,43 @@
 <template>
   <div class="login-container">
-    <div class="login-form">
-      <h2>DdOaListDownload 登录</h2>
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="username">用户名</label>
-          <input 
-            type="text" 
-            id="username" 
+    <div class="login-card">
+      <div class="login-header">
+        <img src="/favicon.ico" alt="Logo" class="logo" v-if="hasLogo" />
+        <h2>DdOaListDownload</h2>
+        <p>集团数字化办公列表下载系统</p>
+      </div>
+      
+      <el-form :model="loginForm" @submit.prevent="handleLogin" label-position="top">
+        <el-form-item label="用户名">
+          <el-input 
             v-model="loginForm.username" 
             placeholder="请输入用户名" 
-            required
+            prefix-icon="User"
+            clearable
           />
-        </div>
-        <div class="form-group">
-          <label for="password">密码</label>
-          <input 
-            type="password" 
-            id="password" 
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input 
             v-model="loginForm.password" 
+            type="password" 
             placeholder="请输入密码" 
-            required
+            prefix-icon="Lock"
+            show-password
           />
-        </div>
-        <button type="submit" class="login-btn" :disabled="loading">
-          {{ loading ? '登录中...' : '登录' }}
-        </button>
-      </form>
+        </el-form-item>
+        <el-button 
+          type="primary" 
+          class="login-btn" 
+          :loading="loading" 
+          @click="handleLogin"
+        >
+          登录
+        </el-button>
+      </el-form>
+      
+      <div class="login-footer">
+        <p>&copy; 2025 cjx 项目开发</p>
+      </div>
     </div>
   </div>
 </template>
@@ -34,28 +45,39 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { User, Lock } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { useUserStore } from '../../stores/user'
 import authApi from '../../api/auth'
 
 const router = useRouter()
 const userStore = useUserStore()
 const loading = ref(false)
+const hasLogo = ref(false)
+
 const loginForm = ref({
   username: '',
   password: ''
 })
 
 const handleLogin = async () => {
+  if (!loginForm.value.username || !loginForm.value.password) {
+    ElMessage.warning('请输入用户名和密码')
+    return
+  }
+  
   loading.value = true
   try {
     const res = await authApi.login(loginForm.value)
     userStore.setToken(res.data.token)
     userStore.setUserInfo(res.data.userInfo)
-    userStore.setMenus(res.data.menus)
-    router.push('/dashboard')
+    userStore.setMenus(res.data.menus || [])
+    
+    ElMessage.success('登录成功，欢迎回来')
+    // 之前是 /dashboard，但在 router/index.js 中根路径是 / 且重定向到 /permission/user
+    router.push('/')
   } catch (error) {
-    console.error('登录失败:', error)
-    alert('登录失败，请检查用户名和密码')
+    // 拦截器已处理大部分错误，这里可以处理特定 UI 逻辑
   } finally {
     loading.value = false
   }
@@ -69,66 +91,54 @@ const handleLogin = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f5f5f5;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.login-form {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.login-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 400px;
+  backdrop-filter: blur(10px);
 }
 
-.login-form h2 {
+.login-header {
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: #333;
+  margin-bottom: 30px;
 }
 
-.form-group {
-  margin-bottom: 1rem;
+.login-header h2 {
+  margin: 10px 0;
+  color: #2c3e50;
+  font-size: 24px;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #409eff;
+.login-header p {
+  color: #7f8c8d;
+  font-size: 14px;
 }
 
 .login-btn {
   width: 100%;
-  padding: 0.8rem;
-  background-color: #409eff;
-  color: white;
+  height: 44px;
+  font-size: 16px;
+  margin-top: 20px;
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  transition: transform 0.2s;
 }
 
 .login-btn:hover {
-  background-color: #66b1ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
 }
 
-.login-btn:disabled {
-  background-color: #a0cfff;
-  cursor: not-allowed;
+.login-footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #95a5a6;
+  font-size: 12px;
 }
 </style>

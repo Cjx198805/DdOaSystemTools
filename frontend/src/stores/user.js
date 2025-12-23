@@ -3,7 +3,14 @@ import { defineStore } from 'pinia'
 export const useUserStore = defineStore('user', {
   state: () => ({
     token: localStorage.getItem('token') || '',
-    userInfo: JSON.parse(localStorage.getItem('userInfo')) || {},
+    userInfo: (() => {
+      try {
+        return JSON.parse(localStorage.getItem('userInfo')) || {}
+      } catch (e) {
+        console.error('解析用户信息失败:', e)
+        return {}
+      }
+    })(),
     menus: []
   }),
   getters: {

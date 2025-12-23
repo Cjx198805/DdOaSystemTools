@@ -84,20 +84,7 @@ const isMenuOpen = ref(true)
 const username = computed(() => userStore.username || '管理员')
 
 const currentTitle = computed(() => {
-  const path = router.currentRoute.value.path
-  const titleMap = {
-    '/permission/user': '用户管理',
-    '/permission/role': '角色管理',
-    '/permission/field': '字段权限设置',
-    '/permission/dictionary': '数据字典管理',
-    '/api/test-case': '测试用例管理',
-    '/api/test': '测试执行',
-    '/api/test-history': '测试历史记录',
-    '/download/task': '任务创建和管理',
-    '/download/progress': '任务进度展示',
-    '/download/result': '结果下载'
-  }
-  return titleMap[path] || '首页'
+  return router.currentRoute.value.meta.title || '首页'
 })
 
 const toggleMenu = () => {
