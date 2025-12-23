@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-card">
       <div class="login-header">
-        <img src="/favicon.ico" alt="Logo" class="logo" v-if="hasLogo" />
+        <!-- <img src="/favicon.ico" alt="Logo" class="logo" v-if="hasLogo" /> -->
         <h2>DdOaListDownload</h2>
         <p>集团数字化办公列表下载系统</p>
       </div>

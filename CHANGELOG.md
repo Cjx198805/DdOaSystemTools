@@ -4,6 +4,25 @@
 邮箱: xx4125517@126.com
 时间: 2025-12-23 11:15:00
 
+## [Unreleased]
+
+### Added
+- **Backend**: Implemented core business logic for Phase 1.
+    - `FieldPermission` service with priority logic (SpecialEdit > Dictionary > Default).
+    - `APITest` service with real HTTP request capability (URL construction, parameter merging).
+    - `DownloadTask` service with permission isolation and robust path handling.
+    - Dynamic loading of JWT Secret from environment variables.
+- **Backend/CLI**: Added `-init` flag to `main.go` for "Drop and Recreate" database initialization strategy.
+- **Frontend**: Added missing API modules (`menu.js`, `download.js`).
+
+### Fixed
+- **Backend**: Resolved GORM Error 1091 (duplicate key name) by adopting "Drop and Recreate" strategy.
+- **Backend**: Fixed `user_roles` table name mismatch in `FieldPermission` query.
+- **Frontend**: Fixed `Layout.vue` empty page issue by replacing `<slot>` with `<router-view>`.
+- **Frontend**: Fixed `user.js` store crash due to invalid JSON in localStorage.
+- **Frontend**: Fixed router path mismatches in `router/index.js` and `Layout.vue` menu links.
+- **Frontend**: Fixed 500 errors in components by creating missing API files and correcting verification imports.
+
 ## [1.1.0] - 2025-12-23
 ### 增加
 - **后端**: 实现 `RecoverMiddleware` 全局异常捕获逻辑。

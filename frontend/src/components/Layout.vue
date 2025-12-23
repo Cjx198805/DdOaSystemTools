@@ -6,19 +6,33 @@
       </div>
       <nav class="nav">
         <div class="nav-group">
-          <h3>权限管理</h3>
+          <h3>系统管理</h3>
           <ul>
             <li>
-              <router-link to="/permission/user" active-class="active">用户管理</router-link>
+              <router-link to="/system/user" active-class="active">用户管理</router-link>
             </li>
             <li>
-              <router-link to="/permission/role" active-class="active">角色管理</router-link>
+              <router-link to="/system/role" active-class="active">角色管理</router-link>
             </li>
             <li>
-              <router-link to="/permission/field" active-class="active">字段权限设置</router-link>
+              <router-link to="/system/field-permission" active-class="active">字段权限设置</router-link>
             </li>
             <li>
-              <router-link to="/permission/dictionary" active-class="active">数据字典管理</router-link>
+              <router-link to="/system/dict" active-class="active">数据字典管理</router-link>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <h3>业务功能</h3>
+          <ul>
+            <li>
+              <router-link to="/business/download-task" active-class="active">下载任务</router-link>
+            </li>
+            <li>
+              <router-link to="/business/progress" active-class="active">任务进度</router-link>
+            </li>
+            <li>
+              <router-link to="/business/result" active-class="active">结果下载</router-link>
             </li>
           </ul>
         </div>
@@ -26,27 +40,10 @@
           <h3>API测试</h3>
           <ul>
             <li>
-              <router-link to="/api/test-case" active-class="active">测试用例管理</router-link>
+              <router-link to="/api-test/case" active-class="active">测试用例</router-link>
             </li>
             <li>
-              <router-link to="/api/test" active-class="active">测试执行</router-link>
-            </li>
-            <li>
-              <router-link to="/api/test-history" active-class="active">测试历史记录</router-link>
-            </li>
-          </ul>
-        </div>
-        <div class="nav-group">
-          <h3>下载任务</h3>
-          <ul>
-            <li>
-              <router-link to="/download/task" active-class="active">任务创建和管理</router-link>
-            </li>
-            <li>
-              <router-link to="/download/progress" active-class="active">任务进度展示</router-link>
-            </li>
-            <li>
-              <router-link to="/download/result" active-class="active">结果下载</router-link>
+              <router-link to="/api-test/history" active-class="active">测试历史</router-link>
             </li>
           </ul>
         </div>
@@ -66,7 +63,7 @@
         </div>
       </header>
       <div class="content">
-        <slot></slot>
+        <router-view></router-view>
       </div>
     </main>
   </div>

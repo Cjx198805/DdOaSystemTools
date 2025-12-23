@@ -220,7 +220,7 @@ func (s *FieldPermissionService) CheckFieldEditable(userID uint, module, field s
 
 	// 1. 获取用户的角色ID列表
 	var roleIDs []uint
-	if err := db.Table("user_role").Where("user_id = ?", userID).Pluck("role_id", &roleIDs).Error; err != nil {
+	if err := db.Table("user_roles").Where("user_id = ?", userID).Pluck("role_id", &roleIDs).Error; err != nil {
 		logrus.Errorf("获取用户角色失败: %v", err)
 		return false, err
 	}

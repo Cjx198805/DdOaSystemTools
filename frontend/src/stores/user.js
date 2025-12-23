@@ -5,9 +5,14 @@ export const useUserStore = defineStore('user', {
     token: localStorage.getItem('token') || '',
     userInfo: (() => {
       try {
-        return JSON.parse(localStorage.getItem('userInfo')) || {}
+        const stored = localStorage.getItem('userInfo')
+        if (stored && stored !== 'undefined') {
+          return JSON.parse(stored)
+        }
+        return {}
       } catch (e) {
         console.error('解析用户信息失败:', e)
+        localStorage.removeItem('userInfo')
         return {}
       }
     })(),

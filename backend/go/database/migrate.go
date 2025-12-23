@@ -11,9 +11,9 @@ func MigrateDB() error {
 
 	// 使用 AutoMigrate 自动创建表
 	err := DB.AutoMigrate(
+		&model.Role{},
 		&model.Company{},
 		&model.User{},
-		&model.Role{},
 		&model.UserRole{},
 		&model.Menu{},
 		&model.RoleMenu{},

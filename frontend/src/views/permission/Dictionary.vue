@@ -220,7 +220,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import dictionaryApi from '../../api/dictionary'
+import dictionaryApi from '../../api/dataDictionary'
 
 // 数据状态
 const dictionaries = ref([])

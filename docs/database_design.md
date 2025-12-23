@@ -22,11 +22,16 @@
 - **UserRole 表**: 用户-角色多对多映射。
 - **Menu 表**: 资源/功能权限菜单树。
 - **FieldPermission 表**: 细粒度字段权限控制。
-  - `special_edit`: 是否拥有特殊编辑权（优先级高于字典配置）。
+  - `role_id`: 关联角色。
+  - `module`, `field`: 目标资源定位。
+  - `viewable`, `editable`: 基础权限开关。
+  - `special_edit`: **特殊编辑权** (int, default 0)，拥有此权限可覆盖数据字典的只读限制。
 
 ### 2.3 业务配置 (Business Config)
-- **APIConfig 表**: 钉钉接口对接规格。
-- **DataDictionary 表**: 业务字段元数据定义（可编辑性、必填性等）。
+- **DataDictionary 表**: 
+  - `module`, `field`, `label`: 字段定义。
+  - `editable`: 全局只读控制 (0/1)。
+  - `status`: 启用状态。
 - **APITestCase & APITestHistory**: 接口测试资产。
 
 ### 2.4 下载引擎 (Download Engine)

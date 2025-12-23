@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -15,29 +16,49 @@ import (
 )
 
 func main() {
+	// 定义命令行标志
+	var initDB bool
+	flag.BoolVar(&initDB, "init", false, "初始化数据库 (迁移表结构并插入种子数据)")
+	flag.Parse()
+
 	// 初始化日志
 	logrus.SetFormatter(&logrus.JSONFormatter{TimestampFormat: "2006-01-02 15:04:05"})
 	logrus.SetOutput(os.Stdout)
 	logrus.SetLevel(logrus.InfoLevel)
 
-	logrus.Info("启动 DdOaListDownload 后端服务")
+	if initDB {
+		logrus.Info("正在执行数据库初始化模式...")
+	} else {
+		logrus.Info("启动 DdOaListDownload 后端服务")
+	}
 
 	// 加载配置
 	cfg := config.LoadConfig()
 
 	// 初始化数据库连接
-	if err := database.InitMySQL(&cfg.MySQL); err != nil {
+	if err := database.InitMySQL(&cfg.MySQL, initDB); err != nil {
 		logrus.Fatalf("初始化MySQL失败: %v", err)
+	}
+
+	// 仅在初始化模式下执行迁移和种子数据
+	if initDB {
+		// 执行数据库迁移
+		if err := database.MigrateDB(); err != nil {
+			logrus.Fatalf("数据库迁移失败: %v", err)
+		}
+
+		// 初始化种子数据
+		if err := database.SeedData(); err != nil {
+			logrus.Fatalf("初始化种子数据失败: %v", err)
+		}
+
+		logrus.Info("数据库初始化完成，程序退出。请直接运行程序以启动服务。")
+		return
 	}
 
 	// 初始化Redis连接
 	if err := database.InitRedis(&cfg.Redis); err != nil {
 		logrus.Fatalf("初始化Redis失败: %v", err)
-	}
-
-	// 执行数据库迁移
-	if err := database.MigrateDB(); err != nil {
-		logrus.Fatalf("数据库迁移失败: %v", err)
 	}
 
 	// 创建Gin引擎

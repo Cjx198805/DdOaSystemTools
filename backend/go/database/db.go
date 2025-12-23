@@ -2,12 +2,13 @@ package database
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/ddoalistdownload/backend/config"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"time"
 )
 
 var (
@@ -15,7 +16,8 @@ var (
 )
 
 // InitMySQL 初始化MySQL连接
-func InitMySQL(cfg *config.MySQLConfig) error {
+// 如果 forceReset 为 true，则会先删除数据库再重新创建
+func InitMySQL(cfg *config.MySQLConfig, forceReset bool) error {
 	// 先连接到MySQL服务器，不指定数据库名
 	rootDSN := fmt.Sprintf("%s:%s@tcp(%s:%s)/?charset=%s&parseTime=True&loc=Local",
 		cfg.Username,
@@ -42,6 +44,16 @@ func InitMySQL(cfg *config.MySQLConfig) error {
 	if err != nil {
 		logrus.Errorf("连接MySQL服务器失败: %v", err)
 		return err
+	}
+
+	// 如果需要重置，先删除数据库
+	if forceReset {
+		logrus.Warnf("正在执行数据库重置: DROP DATABASE %s", cfg.DBName)
+		dropDB := fmt.Sprintf("DROP DATABASE IF EXISTS %s;", cfg.DBName)
+		if err := rootDB.Exec(dropDB).Error; err != nil {
+			logrus.Errorf("删除数据库失败: %v", err)
+			return err
+		}
 	}
 
 	// 创建数据库
