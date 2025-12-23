@@ -303,22 +303,28 @@ func (s *UserService) AssignRoles(userID uint, roleIDs []uint) error {
 }
 
 // Login 用户登录
-func (s *UserService) Login(username, password string) (*model.User, error) {
+func (s *UserService) Login(username, password string) (*model.User, []uint, error) {
 	db := database.GetDB()
 	
 	// 查找用户
 	var user model.User
-	if err := db.Where("username = ? AND status = 1", username).First(&user).Error; err != nil {
+	if err := db.Preload("Roles").Where("username = ? AND status = 1", username).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("用户名或密码错误")
+			return nil, nil, errors.New("用户名或密码错误")
 		}
 		logrus.Errorf("查找用户失败: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 	
 	// 验证密码
 	if user.Password != password {
-		return nil, errors.New("用户名或密码错误")
+		return nil, nil, errors.New("用户名或密码错误")
+	}
+	
+	// 提取角色ID列表
+	var roleIDs []uint
+	for _, role := range user.Roles {
+		roleIDs = append(roleIDs, role.ID)
 	}
 	
 	// 清空密码
@@ -326,5 +332,5 @@ func (s *UserService) Login(username, password string) (*model.User, error) {
 	
 	logrus.Infof("用户登录成功，用户名: %s", username)
 	
-	return &user, nil
+	return &user, roleIDs, nil
 }

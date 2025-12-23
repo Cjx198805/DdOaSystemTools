@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/ddoalistdownload/backend/middleware"
 	"github.com/ddoalistdownload/backend/model"
 	"github.com/ddoalistdownload/backend/service"
 	"github.com/gin-gonic/gin"
@@ -482,7 +483,7 @@ func (c *UserController) Login(ctx *gin.Context) {
 	}
 	
 	// 调用服务层登录
-	user, err := c.userService.Login(req.Username, req.Password)
+	user, roleIDs, err := c.userService.Login(req.Username, req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code":    500,
@@ -492,8 +493,16 @@ func (c *UserController) Login(ctx *gin.Context) {
 		return
 	}
 	
-	// 生成JWT令牌（实际项目中应该生成真正的JWT令牌）
-	token := "mock-jwt-token-" + user.Username
+	// 生成JWT令牌
+	token, err := middleware.GenerateToken(user.ID, user.Username, roleIDs)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": "生成令牌失败",
+			"data":    nil,
+		})
+		return
+	}
 	
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,

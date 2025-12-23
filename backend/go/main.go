@@ -104,119 +104,137 @@ func registerRoutes(router *gin.Engine) {
 	// API分组
 	api := router.Group("/api/v1")
 	{
-		// 集团公司管理
-		company := api.Group("/company")
-		company.GET("", companyController.List)
-		company.POST("", companyController.Create)
-		company.GET("/:id", companyController.Get)
-		company.PUT("/:id", companyController.Update)
-		company.DELETE("/:id", companyController.Delete)
-		company.GET("/tree", companyController.GetTree)
+		// 登录路由（不需要认证）
+		api.POST("/user/login", userController.Login)
 
-		// 身份验证（免登）
-		sso := api.Group("/sso")
-		sso.GET("/config", ssoController.GetConfig)
-		sso.POST("/config", ssoController.UpdateConfig)
-		sso.GET("/test", ssoController.TestSSO)
+		// 需要认证的路由分组
+		authAPI := api.Group("")
+		authAPI.Use(middleware.AuthMiddleware())
+		{
+			// 集团公司管理
+			company := authAPI.Group("/company")
+			company.Use(middleware.PermissionMiddleware("company:manage"))
+			company.GET("", companyController.List)
+			company.POST("", companyController.Create)
+			company.GET("/:id", companyController.Get)
+			company.PUT("/:id", companyController.Update)
+			company.DELETE("/:id", companyController.Delete)
+			company.GET("/tree", companyController.GetTree)
 
-		// AccessToken管理
-		accessToken := api.Group("/access-token")
-		accessToken.GET("", accessTokenController.GetAccessToken)
-		accessToken.POST("", accessTokenController.CreateAccessToken)
-		accessToken.PUT("/:id", accessTokenController.UpdateAccessToken)
-		accessToken.DELETE("/:id", accessTokenController.DeleteAccessToken)
-		accessToken.GET("/list", accessTokenController.GetAccessTokenList)
-		accessToken.POST("/refresh", accessTokenController.RefreshAccessToken)
-		accessToken.POST("/test", accessTokenController.TestAccessToken)
+			// 身份验证（免登）
+			sso := authAPI.Group("/sso")
+			sso.Use(middleware.PermissionMiddleware("sso:manage"))
+			sso.GET("/config", ssoController.GetConfig)
+			sso.POST("/config", ssoController.UpdateConfig)
+			sso.GET("/test", ssoController.TestSSO)
 
-		// API配置管理
-		apiConfig := api.Group("/api-config")
-		apiConfig.GET("", apiConfigController.List)
-		apiConfig.POST("", apiConfigController.Create)
-		apiConfig.GET("/:id", apiConfigController.Get)
-		apiConfig.PUT("/:id", apiConfigController.Update)
-		apiConfig.DELETE("/:id", apiConfigController.Delete)
-		apiConfig.POST("/test", apiConfigController.Test)
+			// AccessToken管理
+			accessToken := authAPI.Group("/access-token")
+			accessToken.Use(middleware.PermissionMiddleware("access_token:manage"))
+			accessToken.GET("", accessTokenController.GetAccessToken)
+			accessToken.POST("", accessTokenController.CreateAccessToken)
+			accessToken.PUT("/:id", accessTokenController.UpdateAccessToken)
+			accessToken.DELETE("/:id", accessTokenController.DeleteAccessToken)
+			accessToken.GET("/list", accessTokenController.GetAccessTokenList)
+			accessToken.POST("/refresh", accessTokenController.RefreshAccessToken)
+			accessToken.POST("/test", accessTokenController.TestAccessToken)
 
-		// 用户管理
-		user := api.Group("/user")
-		user.GET("", userController.List)
-		user.POST("", userController.Create)
-		user.GET("/:id", userController.Get)
-		user.PUT("/:id", userController.Update)
-		user.DELETE("/:id", userController.Delete)
-		user.PUT("/:id/reset-password", userController.ResetPassword)
-		user.PUT("/update-password", userController.UpdatePassword)
-		user.GET("/:id/roles", userController.GetRoles)
-		user.PUT("/:id/assign-roles", userController.AssignRoles)
-		user.POST("/login", userController.Login)
+			// API配置管理
+			apiConfig := authAPI.Group("/api-config")
+			apiConfig.Use(middleware.PermissionMiddleware("api_config:manage"))
+			apiConfig.GET("", apiConfigController.List)
+			apiConfig.POST("", apiConfigController.Create)
+			apiConfig.GET("/:id", apiConfigController.Get)
+			apiConfig.PUT("/:id", apiConfigController.Update)
+			apiConfig.DELETE("/:id", apiConfigController.Delete)
+			apiConfig.POST("/test", apiConfigController.Test)
 
-		// 角色管理
-		role := api.Group("/role")
-		role.GET("", roleController.List)
-		role.POST("", roleController.Create)
-		role.GET("/:id", roleController.Get)
-		role.PUT("/:id", roleController.Update)
-		role.DELETE("/:id", roleController.Delete)
-		role.GET("/:id/menus", roleController.GetMenus)
-		role.PUT("/:id/assign-menus", roleController.AssignMenus)
+			// 用户管理
+			user := authAPI.Group("/user")
+			user.Use(middleware.PermissionMiddleware("user:manage"))
+			user.GET("", userController.List)
+			user.POST("", userController.Create)
+			user.GET("/:id", userController.Get)
+			user.PUT("/:id", userController.Update)
+			user.DELETE("/:id", userController.Delete)
+			user.PUT("/:id/reset-password", userController.ResetPassword)
+			user.PUT("/update-password", userController.UpdatePassword)
+			user.GET("/:id/roles", userController.GetRoles)
+			user.PUT("/:id/assign-roles", userController.AssignRoles)
 
-		// 菜单管理
-		menu := api.Group("/menu")
-		menu.GET("", menuController.List)
-		menu.POST("", menuController.Create)
-		menu.GET("/:id", menuController.Get)
-		menu.PUT("/:id", menuController.Update)
-		menu.DELETE("/:id", menuController.Delete)
-		menu.GET("/tree", menuController.GetTree)
-		menu.GET("/parent/:parent_id", menuController.GetByParentID)
-		menu.GET("/all", menuController.GetAll)
+			// 角色管理
+			role := authAPI.Group("/role")
+			role.Use(middleware.PermissionMiddleware("role:manage"))
+			role.GET("", roleController.List)
+			role.POST("", roleController.Create)
+			role.GET("/:id", roleController.Get)
+			role.PUT("/:id", roleController.Update)
+			role.DELETE("/:id", roleController.Delete)
+			role.GET("/:id/menus", roleController.GetMenus)
+			role.PUT("/:id/assign-menus", roleController.AssignMenus)
 
-		// 字段权限管理
-		fieldPermission := api.Group("/field-permission")
-		fieldPermission.GET("", fieldPermissionController.List)
-		fieldPermission.POST("", fieldPermissionController.Create)
-		fieldPermission.GET("/:id", fieldPermissionController.Get)
-		fieldPermission.PUT("/:id", fieldPermissionController.Update)
-		fieldPermission.DELETE("/:id", fieldPermissionController.Delete)
-		fieldPermission.GET("/role/:role_id/module/:module", fieldPermissionController.GetByRoleAndModule)
+			// 菜单管理
+			menu := authAPI.Group("/menu")
+			menu.Use(middleware.PermissionMiddleware("menu:manage"))
+			menu.GET("", menuController.List)
+			menu.POST("", menuController.Create)
+			menu.GET("/:id", menuController.Get)
+			menu.PUT("/:id", menuController.Update)
+			menu.DELETE("/:id", menuController.Delete)
+			menu.GET("/tree", menuController.GetTree)
+			menu.GET("/parent/:parent_id", menuController.GetByParentID)
+			menu.GET("/all", menuController.GetAll)
 
-		// 数据字典管理
-		dataDictionary := api.Group("/data-dictionary")
-		dataDictionary.GET("", dataDictionaryController.List)
-		dataDictionary.POST("", dataDictionaryController.Create)
-		dataDictionary.GET("/:id", dataDictionaryController.Get)
-		dataDictionary.PUT("/:id", dataDictionaryController.Update)
-		dataDictionary.DELETE("/:id", dataDictionaryController.Delete)
-		dataDictionary.GET("/module/:module", dataDictionaryController.GetByModule)
-		dataDictionary.GET("/module/:module/field/:field", dataDictionaryController.GetByModuleAndField)
+			// 字段权限管理
+			fieldPermission := authAPI.Group("/field-permission")
+			fieldPermission.Use(middleware.PermissionMiddleware("field_permission:manage"))
+			fieldPermission.GET("", fieldPermissionController.List)
+			fieldPermission.POST("", fieldPermissionController.Create)
+			fieldPermission.GET("/:id", fieldPermissionController.Get)
+			fieldPermission.PUT("/:id", fieldPermissionController.Update)
+			fieldPermission.DELETE("/:id", fieldPermissionController.Delete)
+			fieldPermission.GET("/role/:role_id/module/:module", fieldPermissionController.GetByRoleAndModule)
 
-		// 下载任务管理
-		downloadTask := api.Group("/download-task")
-		downloadTask.GET("", downloadTaskController.List)
-		downloadTask.POST("", downloadTaskController.Create)
-		downloadTask.GET("/user/:user_id", downloadTaskController.GetTaskByUserID)
-		downloadTask.GET("/result/:task_id", downloadTaskController.GetResult)
-		downloadTask.GET("/:id", downloadTaskController.Get)
-		downloadTask.DELETE("/:id", downloadTaskController.Delete)
+			// 数据字典管理
+			dataDictionary := authAPI.Group("/data-dictionary")
+			dataDictionary.Use(middleware.PermissionMiddleware("data_dictionary:manage"))
+			dataDictionary.GET("", dataDictionaryController.List)
+			dataDictionary.POST("", dataDictionaryController.Create)
+			dataDictionary.GET("/:id", dataDictionaryController.Get)
+			dataDictionary.PUT("/:id", dataDictionaryController.Update)
+			dataDictionary.DELETE("/:id", dataDictionaryController.Delete)
+			dataDictionary.GET("/module/:module", dataDictionaryController.GetByModule)
+			dataDictionary.GET("/module/:module/field/:field", dataDictionaryController.GetByModuleAndField)
 
-		// API测试管理
-		apiTest := api.Group("/api-test")
-		
-		// 测试用例相关路由
-		testCase := apiTest.Group("/case")
-		testCase.GET("", apiTestController.ListTestCases)
-		testCase.POST("", apiTestController.CreateTestCase)
-		testCase.GET("/:id", apiTestController.GetTestCase)
-		testCase.PUT("/:id", apiTestController.UpdateTestCase)
-		testCase.DELETE("/:id", apiTestController.DeleteTestCase)
-		testCase.POST("/:id/run", apiTestController.RunTestCase)
-		
-		// 测试历史记录相关路由
-		testHistory := apiTest.Group("/history")
-		testHistory.GET("", apiTestController.ListTestHistory)
-		testHistory.GET("/:id", apiTestController.GetTestHistory)
-		testHistory.DELETE("/:id", apiTestController.DeleteTestHistory)
-		testHistory.POST("/clear", apiTestController.ClearTestHistory)
+			// 下载任务管理
+			downloadTask := authAPI.Group("/download-task")
+			downloadTask.Use(middleware.PermissionMiddleware("download_task:manage"))
+			downloadTask.GET("", downloadTaskController.List)
+			downloadTask.POST("", downloadTaskController.Create)
+			downloadTask.GET("/user/:user_id", downloadTaskController.GetTaskByUserID)
+			downloadTask.GET("/result/:task_id", downloadTaskController.GetResult)
+			downloadTask.GET("/:id", downloadTaskController.Get)
+			downloadTask.DELETE("/:id", downloadTaskController.Delete)
+
+			// API测试管理
+			apiTest := authAPI.Group("/api-test")
+			apiTest.Use(middleware.PermissionMiddleware("api_test:manage"))
+			
+			// 测试用例相关路由
+			testCase := apiTest.Group("/case")
+			testCase.GET("", apiTestController.ListTestCases)
+			testCase.POST("", apiTestController.CreateTestCase)
+			testCase.GET("/:id", apiTestController.GetTestCase)
+			testCase.PUT("/:id", apiTestController.UpdateTestCase)
+			testCase.DELETE("/:id", apiTestController.DeleteTestCase)
+			testCase.POST("/:id/run", apiTestController.RunTestCase)
+			
+			// 测试历史记录相关路由
+			testHistory := apiTest.Group("/history")
+			testHistory.GET("", apiTestController.ListTestHistory)
+			testHistory.GET("/:id", apiTestController.GetTestHistory)
+			testHistory.DELETE("/:id", apiTestController.DeleteTestHistory)
+			testHistory.POST("/clear", apiTestController.ClearTestHistory)
+		}
 	}
 }
