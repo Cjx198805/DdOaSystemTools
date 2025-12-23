@@ -1,10 +1,17 @@
 package service
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/ddoalistdownload/backend/database"
 	"github.com/ddoalistdownload/backend/model"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"time"
 )
 
 // APITestService API测试服务
@@ -83,28 +90,120 @@ func (s *APITestService) DeleteTestCase(id uint) error {
 
 // RunTestCase 执行API测试用例
 func (s *APITestService) RunTestCase(userID uint, testCase *model.APITestCase) (*model.APITestHistory, error) {
-	// 创建测试历史记录
-	testHistory := &model.APITestHistory{
-		CompanyID:   testCase.CompanyID,
-		UserID:      userID,
-		APIConfigID: testCase.APIConfigID,
-		TestCaseID:  testCase.ID,
-		Name:        testCase.Name,
-		Headers:     testCase.Headers,
-		Params:      testCase.Params,
-		Status:      "running",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+	// 1. 获取关联的 API 配置
+	var apiConfig model.APIConfig
+	if err := s.db.First(&apiConfig, testCase.APIConfigID).Error; err != nil {
+		logrus.Errorf("获取API配置失败: %v", err)
+		return nil, err
 	}
 
-	// 这里应该执行实际的API测试，暂时模拟成功结果
-	testHistory.Status = "success"
-	testHistory.ActualResult = "{\"code\": 200, \"message\": \"测试成功\", \"data\": null}"
-	testHistory.ResponseTime = 123
-	testHistory.StatusCode = 200
+	// 2. 准备请求 URL
+	baseURL := strings.TrimSuffix(apiConfig.BaseURL, "/")
+	path := strings.TrimPrefix(apiConfig.Path, "/")
+	fullURL := baseURL + "/" + path
 
-	// 保存测试历史记录
+	// 3. 准备请求头和参数（合并配置与用例）
+	headers := make(map[string]string)
+	if apiConfig.Headers != "" {
+		json.Unmarshal([]byte(apiConfig.Headers), &headers)
+	}
+	if testCase.Headers != "" {
+		tempHeaders := make(map[string]string)
+		json.Unmarshal([]byte(testCase.Headers), &tempHeaders)
+		for k, v := range tempHeaders {
+			headers[k] = v
+		}
+	}
+
+	params := make(map[string]interface{})
+	if apiConfig.Params != "" {
+		json.Unmarshal([]byte(apiConfig.Params), &params)
+	}
+	if testCase.Params != "" {
+		tempParams := make(map[string]interface{})
+		json.Unmarshal([]byte(testCase.Params), &tempParams)
+		for k, v := range tempParams {
+			params[k] = v
+		}
+	}
+
+	// 4. 构建 HTTP 请求
+	var bodyReader io.Reader
+	method := strings.ToUpper(apiConfig.Method)
+	if method == "" {
+		method = "GET"
+	}
+
+	if method == "GET" || method == "DELETE" {
+		if len(params) > 0 {
+			if !strings.Contains(fullURL, "?") {
+				fullURL += "?"
+			} else {
+				fullURL += "&"
+			}
+			for k, v := range params {
+				fullURL += fmt.Sprintf("%s=%v&", k, v)
+			}
+			fullURL = strings.TrimSuffix(fullURL, "&")
+		}
+	} else {
+		jsonBytes, _ := json.Marshal(params)
+		bodyReader = strings.NewReader(string(jsonBytes))
+	}
+
+	req, err := http.NewRequest(method, fullURL, bodyReader)
+	if err != nil {
+		logrus.Errorf("创建请求失败: %v", err)
+		return nil, err
+	}
+
+	// 设置请求头
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+	if method != "GET" && req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	// 5. 执行请求并计时
+	client := &http.Client{Timeout: 30 * time.Second}
+	startTime := time.Now()
+	resp, err := client.Do(req)
+	duration := time.Since(startTime).Milliseconds()
+
+	// 6. 构造历史记录
+	testHistory := &model.APITestHistory{
+		CompanyID:    testCase.CompanyID,
+		UserID:       userID,
+		APIConfigID:  testCase.APIConfigID,
+		TestCaseID:   testCase.ID,
+		Name:         testCase.Name,
+		Headers:      testCase.Headers,
+		Params:       testCase.Params,
+		ResponseTime: duration,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	if err != nil {
+		testHistory.Status = "failed"
+		testHistory.ErrorMessage = err.Error()
+	} else {
+		defer resp.Body.Close()
+		testHistory.StatusCode = resp.StatusCode
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		testHistory.ActualResult = string(bodyBytes)
+		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+			testHistory.Status = "success"
+		} else {
+			testHistory.Status = "failed"
+			testHistory.ErrorMessage = fmt.Sprintf("HTTP Status %d", resp.StatusCode)
+		}
+	}
+
+	// 7. 保存历史记录
 	if err := s.db.Create(testHistory).Error; err != nil {
+		logrus.Errorf("保存测试历史失败: %v", err)
 		return nil, err
 	}
 

@@ -4,16 +4,22 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/ddoalistdownload/backend/config"
 	"github.com/ddoalistdownload/backend/database"
 	"github.com/ddoalistdownload/backend/model"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/gorm"
 )
 
-// JWT密钥
-var jwtSecret = []byte("ddoalistdownload-secret-key")
+// getJWTSecret 获取JWT密钥
+func getJWTSecret() []byte {
+	if config.GlobalConfig != nil && config.GlobalConfig.Server.JWTSecret != "" {
+		return []byte(config.GlobalConfig.Server.JWTSecret)
+	}
+	return []byte("ddoalistdownload-secret-key")
+}
 
 // Claims 自定义JWT声明
 // 包含用户ID、用户名和角色ID列表
@@ -22,9 +28,9 @@ var jwtSecret = []byte("ddoalistdownload-secret-key")
 // 邮箱: xx4125517@126.com
 // 时间: 2025-12-22 14:30:00
 type Claims struct {
-	UserID  uint   `json:"user_id"`
+	UserID   uint   `json:"user_id"`
 	Username string `json:"username"`
-	RoleIDs []uint `json:"role_ids"`
+	RoleIDs  []uint `json:"role_ids"`
 	jwt.RegisteredClaims
 }
 
@@ -54,7 +60,7 @@ func GenerateToken(userID uint, username string, roleIDs []uint) (string, error)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// 签名令牌
-	tokenString, err := token.SignedString(jwtSecret)
+	tokenString, err := token.SignedString(getJWTSecret())
 	if err != nil {
 		return "", err
 	}
@@ -71,7 +77,7 @@ func GenerateToken(userID uint, username string, roleIDs []uint) (string, error)
 func ParseToken(tokenString string) (*Claims, error) {
 	// 解析令牌
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
+		return getJWTSecret(), nil
 	})
 
 	if err != nil {

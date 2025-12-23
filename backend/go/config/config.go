@@ -15,7 +15,8 @@ type Config struct {
 
 // ServerConfig 服务器配置
 type ServerConfig struct {
-	Port string
+	Port      string
+	JWTSecret string
 }
 
 // MySQLConfig MySQL配置
@@ -41,6 +42,8 @@ type DingTalkConfig struct {
 	AppKey    string
 	AppSecret string
 }
+
+var GlobalConfig *Config
 
 // LoadConfig 加载配置
 func LoadConfig() *Config {
@@ -69,7 +72,9 @@ func LoadConfig() *Config {
 			AppSecret: getEnv("DINGTALK_APPSECRET", ""),
 		},
 	}
+	config.Server.JWTSecret = getEnv("JWT_SECRET", "ddoalistdownload-secret-key")
 
+	GlobalConfig = config
 	logrus.Info("配置加载完成")
 	return config
 }

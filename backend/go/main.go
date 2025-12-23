@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/ddoalistdownload/backend/config"
 	"github.com/ddoalistdownload/backend/controller"
 	"github.com/ddoalistdownload/backend/database"
 	"github.com/ddoalistdownload/backend/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func main() {
@@ -45,6 +46,7 @@ func main() {
 	// 添加中间件
 	router.Use(middleware.CORS())
 	router.Use(middleware.Logger())
+	router.Use(middleware.RecoverMiddleware())
 
 	// 注册路由
 	registerRoutes(router)
@@ -219,7 +221,7 @@ func registerRoutes(router *gin.Engine) {
 			// API测试管理
 			apiTest := authAPI.Group("/api-test")
 			apiTest.Use(middleware.PermissionMiddleware("api_test:manage"))
-			
+
 			// 测试用例相关路由
 			testCase := apiTest.Group("/case")
 			testCase.GET("", apiTestController.ListTestCases)
@@ -228,7 +230,7 @@ func registerRoutes(router *gin.Engine) {
 			testCase.PUT("/:id", apiTestController.UpdateTestCase)
 			testCase.DELETE("/:id", apiTestController.DeleteTestCase)
 			testCase.POST("/:id/run", apiTestController.RunTestCase)
-			
+
 			// 测试历史记录相关路由
 			testHistory := apiTest.Group("/history")
 			testHistory.GET("", apiTestController.ListTestHistory)

@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+
+	"github.com/ddoalistdownload/backend/database"
 	"github.com/ddoalistdownload/backend/model"
 	"github.com/ddoalistdownload/backend/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 // DownloadTaskController 下载任务控制器
@@ -71,8 +73,27 @@ func (c *DownloadTaskController) List(ctx *gin.Context) {
 		}
 	}
 
+	// 获取当前用户信息
+	userIDAny, _ := ctx.Get("userID")
+	currentUserID := userIDAny.(uint)
+	roleIDsAny, _ := ctx.Get("roleIDs")
+	roleIDList := roleIDsAny.([]uint)
+
+	// 获取角色代码列表
+	var roleCodes []string
+	if err := database.GetDB().Model(&model.Role{}).Where("id IN ?", roleIDList).Pluck("code", &roleCodes).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": "获取角色信息失败",
+			"data":    nil,
+		})
+		return
+	}
+
+	currentUser := model.User{ID: currentUserID}
+
 	// 调用服务层获取列表
-	downloadTasks, total, err := c.downloadTaskService.List(page, pageSize, companyID, userID, taskName, taskType, status)
+	downloadTasks, total, err := c.downloadTaskService.List(page, pageSize, companyID, userID, taskName, taskType, status, currentUser, roleCodes)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code":    500,
