@@ -5,6 +5,7 @@ import (
 
 	"github.com/ddoalistdownload/backend/database"
 	"github.com/ddoalistdownload/backend/model"
+	"github.com/ddoalistdownload/backend/util"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -95,17 +96,17 @@ func (s *FieldPermissionService) Create(fieldPermission *model.FieldPermission) 
 	}
 
 	// 设置默认值
-	if fieldPermission.Viewable == 0 {
-		fieldPermission.Viewable = 1
+	if fieldPermission.Viewable == nil {
+		fieldPermission.Viewable = util.IntPtr(1)
 	}
-	if fieldPermission.Editable == 0 {
-		fieldPermission.Editable = 1
+	if fieldPermission.Editable == nil {
+		fieldPermission.Editable = util.IntPtr(1)
 	}
-	if fieldPermission.ReportVisible == 0 {
-		fieldPermission.ReportVisible = 1
+	if fieldPermission.ReportVisible == nil {
+		fieldPermission.ReportVisible = util.IntPtr(1)
 	}
-	if fieldPermission.SpecialEdit == 0 {
-		fieldPermission.SpecialEdit = 0
+	if fieldPermission.SpecialEdit == nil {
+		fieldPermission.SpecialEdit = util.IntPtr(0)
 	}
 
 	// 创建字段权限
@@ -247,7 +248,7 @@ func (s *FieldPermissionService) CheckFieldEditable(userID uint, module, field s
 	err = db.Where("module = ? AND field = ? AND status = 1", module, field).First(&dict).Error
 	if err == nil {
 		// 找到了字典项，检查是否可编辑
-		return dict.Editable == 1, nil
+		return util.IntValue(dict.Editable, 1) == 1, nil
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		logrus.Errorf("查询数据字典失败: %v", err)
 		return false, err

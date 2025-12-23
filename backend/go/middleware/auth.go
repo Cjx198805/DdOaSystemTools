@@ -48,9 +48,9 @@ func GenerateToken(userID uint, username string, roleIDs []uint) (string, error)
 		RoleIDs:  roleIDs,
 		RegisteredClaims: jwt.RegisteredClaims{
 			// 过期时间设置为72小时
-			ExpiresAt: jwt.NewNumericDate(jwt.TimeFunc().Add(72 * time.Hour)),
-			IssuedAt:  jwt.NewNumericDate(jwt.TimeFunc()),
-			NotBefore: jwt.NewNumericDate(jwt.TimeFunc()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(72 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "ddoalistdownload",
 			Subject:   username,
 		},
