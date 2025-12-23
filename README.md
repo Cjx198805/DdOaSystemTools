@@ -44,6 +44,8 @@ DdOaListDownload 是一套完整的钉钉 API 对接系统，采用 Go + Vue 3 +
   - 数据类型管理
   - 默认值设置
 
+  - 默认值设置
+
 - **API 配置**：
   - 钉钉应用配置（AppKey、AppSecret）
   - API 版本管理
@@ -51,10 +53,10 @@ DdOaListDownload 是一套完整的钉钉 API 对接系统，采用 Go + Vue 3 +
   - 调用频率限制
 
 - **API 测试**：
-  - 在线 API 调试
-  - 测试用例管理
-  - 响应结果查看
-  - 调用历史记录
+  - 在线 API 真实调试（支持 HTTP 客户端调用）
+  - 测试用例管理与参数合并逻辑
+  - 实时响应时间统计与结果持久化
+  - 调用历史记录管理
 
 - **系统管理**：
   - 系统参数配置
@@ -62,16 +64,21 @@ DdOaListDownload 是一套完整的钉钉 API 对接系统，采用 Go + Vue 3 +
   - 日志管理
   - 备份恢复
 
+- **安全性与稳定性**：
+  - JWT Secret 环境变量化配置
+  - 全局 Panic 自动恢复与异常捕获
+  - 前端 401 自动重定向与存储防护
+
 ## 快速开始
 
 ### 环境要求
 
 - **后端**：
-  - Go 1.20+
-  - Python 3.9+
+  - Go 1.20+ (Gin, GORM, JWT-v5)
+  - Python 3.9+ (Flask, SQLAlchemy)
 - **前端**：
-  - Node.js 18+
-- **数据库**：
+  - Node.js 18+ (Vue 3, Element Plus, Pinia)
+- **基础设施**：
   - MySQL 8.0+
   - Redis 7.0+
 
@@ -83,20 +90,26 @@ DdOaListDownload 是一套完整的钉钉 API 对接系统，采用 Go + Vue 3 +
 
 ```
 DdOaListDownload/
-├── README.md              # 项目说明文档
-├── backend/               # 后端目录
-│   ├── go/                # Go 服务（处理新版 API）
-│   └── python/             # Python 服务（处理旧版 API）
-├── frontend/              # 前端目录
-└── docs/                 # 文档目录
+├── README.md              # 项目主要说明文档
+├── backend/               # 后端服务
+│   ├── go/                # 主业务逻辑及新版 API
+│   └── python/             # 遗留系统对接与辅助服务
+├── frontend/              # 前端 Web 应用
+└── docs/                 # 系统文档体系
     ├── setup_guide.md      # 开发环境搭建指南
-    ├── development_guide.md  # 开发规范指南
-    └── implementation_plan.md  # 实施方案
+    ├── database_design.md  # 数据库结构与模型设计
+    ├── api_design.md       # API 接口规格说明
+    ├── development_guide.md # 核心开发规范
+    └── deployment_guide.md  # 生产环境部署方案
 ```
 
 ## 开发指南
 
 请参考 [开发规范](docs/development_guide.md)。
+
+## 变更记录
+
+请参考 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 许可证
 
@@ -104,4 +117,4 @@ MIT License
 
 作者: cjx
 邮箱: xx4125517@126.com
-时间: 2025-12-20 14:45:00
+时间: 2025-12-23 10:55:00
