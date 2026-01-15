@@ -3,7 +3,11 @@ import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { Button, message, Popconfirm, Space, Progress } from 'ant-design-vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getDownloadTaskList, deleteDownloadTask, type BusinessDownloadApi } from '#/api/business/download';
+import {
+  getDownloadTaskList,
+  deleteDownloadTask,
+  type BusinessDownloadApi,
+} from '#/api/business/download';
 import { useColumns, useGridFormSchema } from './data';
 import DownloadForm from './modules/form.vue';
 
@@ -55,8 +59,7 @@ async function onDelete(row: BusinessDownloadApi.Task) {
     await deleteDownloadTask(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 function onDownloadResult(row: BusinessDownloadApi.Task) {
@@ -80,19 +83,31 @@ function onDownloadResult(row: BusinessDownloadApi.Task) {
       </template>
 
       <template #progress="{ row }">
-        <Progress :percent="row.progress" size="small" :status="row.status === 3 ? 'exception' : (row.status === 2 ? 'success' : 'active')" />
+        <Progress
+          :percent="row.progress"
+          size="small"
+          :status="
+            row.status === 3
+              ? 'exception'
+              : row.status === 2
+                ? 'success'
+                : 'active'
+          "
+        />
       </template>
 
       <template #operation="{ row }">
         <Space>
-          <Button :disabled="row.status !== 2" size="small" type="link" @click="onDownloadResult(row)">
+          <Button
+            :disabled="row.status !== 2"
+            size="small"
+            type="link"
+            @click="onDownloadResult(row)"
+          >
             <IconifyIcon icon="lucide:download" class="size-4" />
             下载结果
           </Button>
-          <Popconfirm
-            title="确定要删除该任务吗？"
-            @confirm="onDelete(row)"
-          >
+          <Popconfirm title="确定要删除该任务吗？" @confirm="onDelete(row)">
             <Button danger size="small" type="link">
               <IconifyIcon icon="lucide:trash-2" class="size-4" />
               删除

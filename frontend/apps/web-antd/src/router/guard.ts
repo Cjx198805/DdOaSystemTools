@@ -55,8 +55,8 @@ function setupAccessGuard(router: Router) {
       if (to.path === LOGIN_PATH && accessStore.accessToken) {
         return decodeURIComponent(
           (to.query?.redirect as string) ||
-          userStore.userInfo?.homePath ||
-          preferences.app.defaultHomePath,
+            userStore.userInfo?.homePath ||
+            preferences.app.defaultHomePath,
         );
       }
       return true;
@@ -86,7 +86,12 @@ function setupAccessGuard(router: Router) {
     }
 
     // 是否已经生成过动态路由
-    console.log('[Access Guard] to:', to.fullPath, 'isAccessChecked:', accessStore.isAccessChecked);
+    console.log(
+      '[Access Guard] to:',
+      to.fullPath,
+      'isAccessChecked:',
+      accessStore.isAccessChecked,
+    );
     if (accessStore.isAccessChecked) {
       return true;
     }
@@ -104,7 +109,10 @@ function setupAccessGuard(router: Router) {
       // 则会在菜单中显示，但是访问会被重定向到403
       routes: accessRoutes,
     });
-    console.log('[Access Guard] accessibleRoutes count:', accessibleRoutes.length);
+    console.log(
+      '[Access Guard] accessibleRoutes count:',
+      accessibleRoutes.length,
+    );
 
     // 保存菜单信息和路由信息
     accessStore.setAccessMenus(accessibleMenus);
@@ -120,8 +128,13 @@ function setupAccessGuard(router: Router) {
 
     // 关键修正：如果重定向的目标在已加载的路由中找不到（即解析为 FallbackNotFound），强制跳转回首页
     const resolvedRoute = router.resolve(decodeURIComponent(redirectPath));
-    if (resolvedRoute.name === 'FallbackNotFound' || redirectPath === '/analytics') {
-      console.warn(`[Access Guard] Target path ${redirectPath} not found. Defaulting to ${homePath}`);
+    if (
+      resolvedRoute.name === 'FallbackNotFound' ||
+      redirectPath === '/analytics'
+    ) {
+      console.warn(
+        `[Access Guard] Target path ${redirectPath} not found. Defaulting to ${homePath}`,
+      );
       redirectPath = homePath;
     }
 

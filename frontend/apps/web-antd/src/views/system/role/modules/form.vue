@@ -2,7 +2,13 @@
 import { computed, ref, nextTick } from 'vue';
 import { useVbenDrawer, Tree } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
-import { createSystemRole, updateSystemRole, assignRoleMenus, getRoleMenus, type SystemRoleApi } from '#/api/system/role';
+import {
+  createSystemRole,
+  updateSystemRole,
+  assignRoleMenus,
+  getRoleMenus,
+  type SystemRoleApi,
+} from '#/api/system/role';
 import { getSystemMenuList } from '#/api/system/menu';
 import { useFormSchema } from '../data';
 import { Spin } from 'ant-design-vue';
@@ -44,12 +50,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
         const res = await createSystemRole(values);
         roleId = (res as any).id;
       }
-      
+
       // 分配菜单
       if (roleId) {
         await assignRoleMenus(roleId, selectedMenuIds.value);
       }
-      
+
       emits('success');
       drawerApi.close();
     } catch (error) {
@@ -72,7 +78,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         formData.value = data;
         id.value = data.id;
         formApi.setValues(data);
-        
+
         // 加载已绑定的菜单
         const res = await getRoleMenus(data.id);
         const menus = (res as any) || [];
@@ -93,7 +99,7 @@ const getDrawerTitle = computed(() => {
 <template>
   <Drawer :title="getDrawerTitle" width="600">
     <Form />
-    <div class="mt-4 p-4 border rounded">
+    <div class="mt-4 rounded border p-4">
       <div class="mb-2 font-bold">菜单权限分配</div>
       <Spin :spinning="loadingMenus">
         <Tree
@@ -104,9 +110,9 @@ const getDrawerTitle = computed(() => {
           :field-names="{
             children: 'children',
             title: 'name',
-            key: 'id'
+            key: 'id',
           }"
-          style="max-height: 400px; overflow: auto;"
+          style="max-height: 400px; overflow: auto"
         />
       </Spin>
     </div>

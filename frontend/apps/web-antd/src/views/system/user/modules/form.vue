@@ -2,7 +2,11 @@
 import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
-import { createSystemUser, updateSystemUser, type SystemUserApi } from '#/api/system/user';
+import {
+  createSystemUser,
+  updateSystemUser,
+  type SystemUserApi,
+} from '#/api/system/user';
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -30,7 +34,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       emits('success');
       drawerApi.close();
     } catch (error) {
-       // Error handled by interceptor
+      // Error handled by interceptor
     } finally {
       drawerApi.unlock();
     }

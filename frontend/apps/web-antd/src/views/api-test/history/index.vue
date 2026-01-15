@@ -47,7 +47,7 @@ function onViewResponse(row: ApiTestApi.TestHistory) {
     <Grid>
       <template #operation="{ row }">
         <Button size="small" type="link" @click="onViewResponse(row)">
-          <IconifyIcon icon="lucide:eye" class="size-4 mr-1" />
+          <IconifyIcon icon="lucide:eye" class="mr-1 size-4" />
           查看详情
         </Button>
       </template>

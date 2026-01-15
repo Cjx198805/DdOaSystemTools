@@ -2,7 +2,11 @@
 import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
-import { createSystemMenu, updateSystemMenu, type SystemMenuApi } from '#/api/system/menu';
+import {
+  createSystemMenu,
+  updateSystemMenu,
+  type SystemMenuApi,
+} from '#/api/system/menu';
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -49,7 +53,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         id.value = undefined;
         // 如果有 parent_id 传进来，可以设置默认值
         if (data && data.parent_id) {
-           formApi.setValues({ parent_id: data.parent_id });
+          formApi.setValues({ parent_id: data.parent_id });
         }
       }
     }

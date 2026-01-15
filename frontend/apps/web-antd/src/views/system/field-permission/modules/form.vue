@@ -2,7 +2,11 @@
 import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
-import { createFieldPermission, updateFieldPermission, type SystemFieldPermissionApi } from '#/api/system/field_permission';
+import {
+  createFieldPermission,
+  updateFieldPermission,
+  type SystemFieldPermissionApi,
+} from '#/api/system/field_permission';
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -37,7 +41,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
   async onOpenChange(isOpen) {
     if (isOpen) {
-      const data = drawerApi.getData<SystemFieldPermissionApi.FieldPermission>();
+      const data =
+        drawerApi.getData<SystemFieldPermissionApi.FieldPermission>();
       formApi.resetForm();
 
       if (data && data.id) {

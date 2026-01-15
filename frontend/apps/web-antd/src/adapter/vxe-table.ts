@@ -64,7 +64,8 @@ setupVbenVxeTable({
       renderTableDefault(renderOpts, params) {
         const { props } = renderOpts;
         const { column, row } = params;
-        const tagProps = (typeof props === 'function' ? props(row) : props) || {};
+        const tagProps =
+          (typeof props === 'function' ? props(row) : props) || {};
         return h(
           Tag,
           { color: tagProps.color },

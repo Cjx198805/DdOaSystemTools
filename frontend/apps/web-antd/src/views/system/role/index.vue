@@ -3,7 +3,11 @@ import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { Button, message, Popconfirm, Space } from 'ant-design-vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getSystemRoleList, deleteSystemRole, type SystemRoleApi } from '#/api/system/role';
+import {
+  getSystemRoleList,
+  deleteSystemRole,
+  type SystemRoleApi,
+} from '#/api/system/role';
 import { useColumns, useGridFormSchema } from './data';
 import RoleForm from './modules/form.vue';
 
@@ -59,8 +63,7 @@ async function onDelete(row: SystemRoleApi.Role) {
     await deleteSystemRole(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 </script>
 
@@ -81,10 +84,7 @@ async function onDelete(row: SystemRoleApi.Role) {
             <IconifyIcon icon="lucide:notebook-pen" class="size-4" />
             编辑
           </Button>
-          <Popconfirm
-            title="确定要删除该角色吗？"
-            @confirm="onDelete(row)"
-          >
+          <Popconfirm title="确定要删除该角色吗？" @confirm="onDelete(row)">
             <Button danger size="small" type="link">
               <IconifyIcon icon="lucide:trash-2" class="size-4" />
               删除

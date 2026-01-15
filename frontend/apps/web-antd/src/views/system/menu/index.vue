@@ -3,7 +3,11 @@ import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { Button, message, Popconfirm, Space } from 'ant-design-vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getSystemMenuTree, deleteSystemMenu, type SystemMenuApi } from '#/api/system/menu';
+import {
+  getSystemMenuTree,
+  deleteSystemMenu,
+  type SystemMenuApi,
+} from '#/api/system/menu';
 import { useColumns } from './data';
 import MenuForm from './modules/form.vue';
 
@@ -56,8 +60,7 @@ async function onDelete(row: SystemMenuApi.Menu) {
     await deleteSystemMenu(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 </script>
 

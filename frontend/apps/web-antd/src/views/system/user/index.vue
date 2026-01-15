@@ -3,7 +3,11 @@ import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { Button, message, Popconfirm, Space } from 'ant-design-vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getSystemUserList, deleteSystemUser, type SystemUserApi } from '#/api/system/user';
+import {
+  getSystemUserList,
+  deleteSystemUser,
+  type SystemUserApi,
+} from '#/api/system/user';
 import { useColumns, useGridFormSchema } from './data';
 import UserForm from './modules/form.vue';
 
@@ -82,10 +86,7 @@ async function onDelete(row: SystemUserApi.User) {
             <IconifyIcon icon="lucide:notebook-pen" class="size-4" />
             编辑
           </Button>
-          <Popconfirm
-            title="确定要删除该用户吗？"
-            @confirm="onDelete(row)"
-          >
+          <Popconfirm title="确定要删除该用户吗？" @confirm="onDelete(row)">
             <Button danger size="small" type="link">
               <IconifyIcon icon="lucide:trash-2" class="size-4" />
               删除

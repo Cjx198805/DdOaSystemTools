@@ -2,7 +2,11 @@
 import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
-import { createSystemCompany, updateSystemCompany, type SystemCompanyApi } from '#/api/system/company';
+import {
+  createSystemCompany,
+  updateSystemCompany,
+  type SystemCompanyApi,
+} from '#/api/system/company';
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
