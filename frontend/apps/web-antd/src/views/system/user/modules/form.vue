@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
-import { createSystemUser, updateSystemUser, SystemUserApi } from '#/api/system/user';
+import { createSystemUser, updateSystemUser, type SystemUserApi } from '#/api/system/user';
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);

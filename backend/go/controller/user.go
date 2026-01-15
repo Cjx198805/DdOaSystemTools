@@ -57,6 +57,7 @@ func (c *UserController) GetCurrentUserInfo(ctx *gin.Context) {
 			"avatar":   "https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png",
 			"desc":     user.Email,
 			"roles":    []string{"admin"}, // 暂时硬编码
+			"homePath": "/system/user",
 		},
 	})
 }

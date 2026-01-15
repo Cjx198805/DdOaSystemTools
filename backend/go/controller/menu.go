@@ -306,18 +306,25 @@ func (c *MenuController) convertToVbenMenu(menus []model.Menu) []map[string]inte
 	var rootMenus []map[string]interface{}
 
 	for _, m := range menus {
+		// 生成安全的 name (去掉斜杠)
+		safeName := m.Path
+		if safeName == "" {
+			safeName = m.Name
+		}
+
 		item := map[string]interface{}{
 			"path":      m.Path,
-			"name":      m.Name,
+			"name":      safeName,
 			"component": m.Component,
 			"meta": map[string]interface{}{
 				"title": m.Name,
 				"icon":  m.Icon,
 				"order": m.Sort,
+				"roles": []string{"admin"}, // 显式包含权限
 			},
 		}
-		// 如果是顶级菜单且有子菜单，Vben 通常要求 component 为 BasicLayout
-		if m.ParentID == 0 && m.Component == "" {
+		// 如果是顶级菜单且没有组件，或者是目录类型，Vben 要求 component 为 BasicLayout
+		if m.ParentID == 0 && (m.Component == "" || m.Component == "BasicLayout") {
 			item["component"] = "BasicLayout"
 		}
 

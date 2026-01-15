@@ -40,15 +40,15 @@ export const useAuthStore = defineStore('auth', () => {
         accessStore.setAccessToken(accessToken);
 
         // 获取用户信息并存储到 accessStore 中
-        const [fetchUserInfoResult, accessCodes] = await Promise.all([
+        const [fetchUserInfoResult] = await Promise.all([
           fetchUserInfo(),
-          // getAccessCodesApi(),
-          Promise.resolve([]), // 暂时返回空权限
         ]);
 
         userInfo = fetchUserInfoResult;
 
         userStore.setUserInfo(userInfo);
+        // 使用返回的 roles 作为权限码
+        const accessCodes = userInfo?.roles || [];
         accessStore.setAccessCodes(accessCodes);
 
         if (accessStore.loginExpired) {

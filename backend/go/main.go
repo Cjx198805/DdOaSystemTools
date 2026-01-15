@@ -134,6 +134,15 @@ func registerRoutes(router *gin.Engine) {
 		authAPI := api.Group("")
 		authAPI.Use(middleware.AuthMiddleware())
 		{
+			// 身份认证与权限
+			authAPI.GET("/user/info", userController.GetCurrentUserInfo)
+			authAPI.GET("/auth/codes", func(c *gin.Context) {
+				c.JSON(200, gin.H{"code": 200, "message": "success", "data": []string{"admin"}})
+			})
+			authAPI.POST("/auth/logout", func(c *gin.Context) {
+				c.JSON(200, gin.H{"code": 200, "message": "退出成功", "data": nil})
+			})
+
 			// 集团公司管理
 			company := authAPI.Group("/company")
 			company.Use(middleware.PermissionMiddleware("company:manage"))

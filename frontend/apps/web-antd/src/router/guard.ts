@@ -55,8 +55,8 @@ function setupAccessGuard(router: Router) {
       if (to.path === LOGIN_PATH && accessStore.accessToken) {
         return decodeURIComponent(
           (to.query?.redirect as string) ||
-            userStore.userInfo?.homePath ||
-            preferences.app.defaultHomePath,
+          userStore.userInfo?.homePath ||
+          preferences.app.defaultHomePath,
         );
       }
       return true;
@@ -86,6 +86,7 @@ function setupAccessGuard(router: Router) {
     }
 
     // 是否已经生成过动态路由
+    console.log('[Access Guard] to:', to.fullPath, 'isAccessChecked:', accessStore.isAccessChecked);
     if (accessStore.isAccessChecked) {
       return true;
     }
@@ -94,6 +95,7 @@ function setupAccessGuard(router: Router) {
     // 当前登录用户拥有的角色标识列表
     const userInfo = userStore.userInfo || (await authStore.fetchUserInfo());
     const userRoles = userInfo.roles ?? [];
+    console.log('[Access Guard] User roles:', userRoles);
 
     // 生成菜单和路由
     const { accessibleMenus, accessibleRoutes } = await generateAccess({
@@ -102,16 +104,28 @@ function setupAccessGuard(router: Router) {
       // 则会在菜单中显示，但是访问会被重定向到403
       routes: accessRoutes,
     });
+    console.log('[Access Guard] accessibleRoutes count:', accessibleRoutes.length);
 
     // 保存菜单信息和路由信息
     accessStore.setAccessMenus(accessibleMenus);
     accessStore.setAccessRoutes(accessibleRoutes);
     accessStore.setIsAccessChecked(true);
-    const redirectPath = (from.query.redirect ??
+
+    const homePath = userInfo.homePath || preferences.app.defaultHomePath;
+
+    let redirectPath = (from.query.redirect ??
       (to.path === preferences.app.defaultHomePath
-        ? userInfo.homePath || preferences.app.defaultHomePath
+        ? homePath
         : to.fullPath)) as string;
 
+    // 关键修正：如果重定向的目标在已加载的路由中找不到（即解析为 FallbackNotFound），强制跳转回首页
+    const resolvedRoute = router.resolve(decodeURIComponent(redirectPath));
+    if (resolvedRoute.name === 'FallbackNotFound' || redirectPath === '/analytics') {
+      console.warn(`[Access Guard] Target path ${redirectPath} not found. Defaulting to ${homePath}`);
+      redirectPath = homePath;
+    }
+
+    console.log('[Access Guard] Redirecting to:', redirectPath);
     return {
       ...router.resolve(decodeURIComponent(redirectPath)),
       replace: true,

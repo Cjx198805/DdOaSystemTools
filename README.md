@@ -28,14 +28,14 @@
 
 - **后端 (Core)**: Go 1.20+ (Gin, GORM, JWT-v5)
 - **后端 (Legacy/Aux)**: Python 3.9+ (Flask)
-- **前端**: Node.js 18+ (Vue 3, Element Plus, Pinia, Vite)
+- **前端**: Node.js 20+ (Vue Vben Admin 5, Ant Design Vue, Vite)
 - **数据存储**: MySQL 8.0+
 - **缓存**: Redis 7.0+
 
 ## 快速开始
 
 ### 1. 环境准备
-确保本地已安装 Go, Node.js, MySQL 和 Redis。
+确保本地已安装 Go, Node.js (建议 v20+), pnpm, MySQL 和 Redis。
 
 ### 2. 数据库初始化
 本项目采用 **Drop and Recreate** 策略进行初始化，运行以下命令将重置数据库并填充测试数据：
@@ -46,7 +46,7 @@ go run main.go -init
 
 ### 3. 启动服务
 - **后端**: `cd backend/go && go run main.go` (运行在 :8080)
-- **前端**: `cd frontend && npm run dev` (运行在 :3002)
+- **前端**: `cd frontend/apps/web-antd && pnpm run dev` (运行在 :5666)
 
 详细部署指南请参考 [安装与部署指南](docs/setup_guide.md)。
 
@@ -65,4 +65,4 @@ MIT License
 ---
 **作者**: cjx  
 **邮箱**: xx4125517@126.com  
-**最后更新**: 2025-12-23 15:50:00
+**最后更新**: 2025-12-23 17:20:00

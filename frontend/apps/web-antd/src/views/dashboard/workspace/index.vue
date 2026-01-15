@@ -10,7 +10,6 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import {
-  AnalysisChartCard,
   WorkbenchHeader,
   WorkbenchProject,
   WorkbenchQuickNav,
@@ -21,7 +20,6 @@ import { preferences } from '@vben/preferences';
 import { useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
 
-import AnalyticsVisitsSource from '../analytics/analytics-visits-source.vue';
 
 const userStore = useUserStore();
 
@@ -96,32 +94,26 @@ const quickNavItems: WorkbenchQuickNavItem[] = [
   {
     color: '#bf0c2c',
     icon: 'ion:grid-outline',
-    title: '仪表盘',
-    url: '/dashboard',
+    title: '用户管理',
+    url: '/system/user',
   },
   {
     color: '#e18525',
-    icon: 'ion:layers-outline',
-    title: '组件',
-    url: '/demos/features/icons',
+    icon: 'lucide:notebook-pen',
+    title: '角色管理',
+    url: '/system/role',
   },
   {
     color: '#3fb27f',
-    icon: 'ion:settings-outline',
-    title: '系统管理',
-    url: '/demos/features/login-expired', // 这里的 URL 是示例，实际项目中需要根据实际情况进行调整
+    icon: 'lucide:menu',
+    title: '菜单管理',
+    url: '/system/menu',
   },
   {
     color: '#4daf1bc9',
-    icon: 'ion:key-outline',
-    title: '权限管理',
-    url: '/demos/access/page-control',
-  },
-  {
-    color: '#00d8ff',
-    icon: 'ion:bar-chart-outline',
-    title: '图表',
-    url: '/analytics',
+    icon: 'lucide:download',
+    title: '下载任务',
+    url: '/business/download-task',
   },
 ];
 
@@ -257,9 +249,6 @@ function navTo(nav: WorkbenchProjectItem | WorkbenchQuickNavItem) {
           @click="navTo"
         />
         <WorkbenchTodo :items="todoItems" class="mt-5" title="待办事项" />
-        <AnalysisChartCard class="mt-5" title="访问来源">
-          <AnalyticsVisitsSource />
-        </AnalysisChartCard>
       </div>
     </div>
   </div>

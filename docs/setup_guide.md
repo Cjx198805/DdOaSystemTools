@@ -143,18 +143,20 @@ python app.py
 
 ```bash
 cd frontend
-npm install
+# 必须使用 pnpm
+pnpm install
 ```
 
 ### 4.2 配置文件
 
-- 复制 `.env.example` 为 `.env`
-- 修改配置文件中的 API 地址等信息
+- 核心应用配置文件位于：`frontend/apps/web-antd/.env.development`
+- 请确保环境变量 `VITE_APP_HOME_PATH=/system/user` 已设置。
 
 ### 4.3 运行服务
 
 ```bash
-npm run dev
+cd frontend/apps/web-antd
+pnpm run dev
 ```
 
 ## 5. 数据库初始化
@@ -183,7 +185,7 @@ cd backend/python
 
 ## 6. 访问应用
 
-- 前端应用：http://localhost:5173
+- 前端应用：http://localhost:5666
 - Go 后端 API：http://localhost:8080
 - Python 后端 API：http://localhost:8081
 
@@ -231,4 +233,4 @@ go env -w GOPROXY=https://goproxy.io,direct
 
 作者: cjx
 邮箱: xx4125517@126.com
-时间: 2025-12-20 14:30:00
+时间: 2025-12-23 17:22:00

@@ -2,9 +2,26 @@
 
 作者: cjx
 邮箱: xx4125517@126.com
-时间: 2025-12-23 11:15:00
+时间: 2025-12-23 17:25:00
 
 ## [Unreleased]
+
+## [1.2.0] - 2025-12-23
+### 增加
+- **前端**: 全新重构，由传统 Vue 3 迁移至 **Vue Vben Admin 5 (Ant Design Vue 版)**。
+- **前端**: 引入 Pnpm Monorepo 架构，提升包管理效率与构建速度。
+- **前端**: 实现动态菜单对接（Backend Access Mode），支持从后端加载 RBAC 菜单。
+- **前端**: 业务功能完整迁移（用户管理、角色管理、菜单管理、公司管理、数据字典、字段权限、下载任务、API 测试）。
+- **前端**: 引入 `IconifyIcon` + Lucide 方案，实现全系统图标标准化。
+
+### 修复
+- **前端**: 解决 ESM 模式下由于 Namespace 引用导致的 `SyntaxError` (统一 import type)。
+- **前端**: 修复页面刷新 404 及旧路径（如 `/analytics`）自动重定向逻辑。
+- **前端**: 解决 `@vben/icons` 导出缺失问题。
+
+### 优化
+- **清理**: 移除 `frontend_legacy` 冗余目录，精简工作空间。
+- **文档**: 更新 `README.md` 与 `setup_guide.md` 以适配 Vben Admin 架构。
 
 ### Added
 - **Backend**: Implemented core business logic for Phase 1.
