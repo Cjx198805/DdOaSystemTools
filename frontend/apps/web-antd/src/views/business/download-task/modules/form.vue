@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
+
 import { useVbenForm } from '#/adapter/form';
-import {
-  createDownloadTask,
-  type BusinessDownloadApi,
-} from '#/api/business/download';
+import { createDownloadTask } from '#/api/business/download';
+
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -25,7 +23,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       await createDownloadTask(values);
       emits('success');
       drawerApi.close();
-    } catch (error) {
+    } catch {
     } finally {
       drawerApi.unlock();
     }

@@ -1,13 +1,14 @@
 <script lang="ts" setup>
+import type { SystemDictApi } from '#/api/system/dict';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
+
 import { Button, message, Popconfirm, Space } from 'ant-design-vue';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  getSystemDictList,
-  deleteSystemDict,
-  type SystemDictApi,
-} from '#/api/system/dict';
+import { deleteSystemDict, getSystemDictList } from '#/api/system/dict';
+
 import { useColumns, useGridFormSchema } from './data';
 import DictForm from './modules/form.vue';
 
@@ -63,7 +64,7 @@ async function onDelete(row: SystemDictApi.Dict) {
     await deleteSystemDict(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {}
+  } catch {}
 }
 </script>
 

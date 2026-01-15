@@ -1,14 +1,18 @@
 <script lang="ts" setup>
+import type { ApiTestApi } from '#/api/business/api_test';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
+
 import { Button, message, Popconfirm, Space } from 'ant-design-vue';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  getTestCaseList,
   deleteTestCase,
+  getTestCaseList,
   runTestCase,
-  type ApiTestApi,
 } from '#/api/business/api_test';
+
 import { useColumns } from './data';
 import CaseForm from './modules/form.vue';
 
@@ -59,7 +63,7 @@ async function onDelete(row: ApiTestApi.TestCase) {
     await deleteTestCase(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {}
+  } catch {}
 }
 
 async function onRun(row: ApiTestApi.TestCase) {
@@ -67,8 +71,7 @@ async function onRun(row: ApiTestApi.TestCase) {
   try {
     await runTestCase(row.id);
     message.success('测试运行完成，请前往历史查看结果');
-  } catch (error) {
-  } finally {
+  } catch {} finally {
     hide();
   }
 }

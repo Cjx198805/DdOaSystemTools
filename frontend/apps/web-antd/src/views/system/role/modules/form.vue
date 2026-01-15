@@ -1,17 +1,22 @@
 <script lang="ts" setup>
-import { computed, ref, nextTick } from 'vue';
-import { useVbenDrawer, Tree } from '@vben/common-ui';
-import { useVbenForm } from '#/adapter/form';
-import {
-  createSystemRole,
-  updateSystemRole,
-  assignRoleMenus,
-  getRoleMenus,
-  type SystemRoleApi,
-} from '#/api/system/role';
-import { getSystemMenuList } from '#/api/system/menu';
-import { useFormSchema } from '../data';
+import type { SystemRoleApi } from '#/api/system/role';
+
+import { computed, ref } from 'vue';
+
+import { Tree, useVbenDrawer } from '@vben/common-ui';
+
 import { Spin } from 'ant-design-vue';
+
+import { useVbenForm } from '#/adapter/form';
+import { getSystemMenuList } from '#/api/system/menu';
+import {
+  assignRoleMenus,
+  createSystemRole,
+  getRoleMenus,
+  updateSystemRole,
+} from '#/api/system/role';
+
+import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
 
@@ -58,8 +63,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
       emits('success');
       drawerApi.close();
-    } catch (error) {
-    } finally {
+    } catch {} finally {
       drawerApi.unlock();
     }
   },

@@ -1,13 +1,17 @@
 <script lang="ts" setup>
+import type { SystemFieldPermissionApi } from '#/api/system/field_permission';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
+
 import { Button, message, Popconfirm, Space } from 'ant-design-vue';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  getFieldPermissionList,
   deleteFieldPermission,
-  type SystemFieldPermissionApi,
+  getFieldPermissionList,
 } from '#/api/system/field_permission';
+
 import { useColumns, useGridFormSchema } from './data';
 import PermissionForm from './modules/form.vue';
 
@@ -63,7 +67,7 @@ async function onDelete(row: SystemFieldPermissionApi.FieldPermission) {
     await deleteFieldPermission(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {}
+  } catch {}
 }
 </script>
 

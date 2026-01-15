@@ -1,12 +1,13 @@
 <script lang="ts" setup>
+import type { SystemUserApi } from '#/api/system/user';
+
 import { computed, ref } from 'vue';
+
 import { useVbenDrawer } from '@vben/common-ui';
+
 import { useVbenForm } from '#/adapter/form';
-import {
-  createSystemUser,
-  updateSystemUser,
-  type SystemUserApi,
-} from '#/api/system/user';
+import { createSystemUser, updateSystemUser } from '#/api/system/user';
+
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -26,14 +27,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const values = await formApi.getValues();
     drawerApi.lock();
     try {
-      if (id.value) {
-        await updateSystemUser(id.value, values);
-      } else {
-        await createSystemUser(values);
-      }
+      await (id.value
+        ? updateSystemUser(id.value, values)
+        : createSystemUser(values));
       emits('success');
       drawerApi.close();
-    } catch (error) {
+    } catch {
       // Error handled by interceptor
     } finally {
       drawerApi.unlock();

@@ -1,12 +1,16 @@
 <script lang="ts" setup>
+import type { SystemFieldPermissionApi } from '#/api/system/field_permission';
+
 import { computed, ref } from 'vue';
+
 import { useVbenDrawer } from '@vben/common-ui';
+
 import { useVbenForm } from '#/adapter/form';
 import {
   createFieldPermission,
   updateFieldPermission,
-  type SystemFieldPermissionApi,
 } from '#/api/system/field_permission';
+
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -26,15 +30,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const values = await formApi.getValues();
     drawerApi.lock();
     try {
-      if (id.value) {
-        await updateFieldPermission(id.value, values);
-      } else {
-        await createFieldPermission(values);
-      }
+      await (id.value
+        ? updateFieldPermission(id.value, values)
+        : createFieldPermission(values));
       emits('success');
       drawerApi.close();
-    } catch (error) {
-    } finally {
+    } catch {} finally {
       drawerApi.unlock();
     }
   },

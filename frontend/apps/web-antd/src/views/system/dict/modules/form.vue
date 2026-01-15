@@ -1,12 +1,13 @@
 <script lang="ts" setup>
+import type { SystemDictApi } from '#/api/system/dict';
+
 import { computed, ref } from 'vue';
+
 import { useVbenDrawer } from '@vben/common-ui';
+
 import { useVbenForm } from '#/adapter/form';
-import {
-  createSystemDict,
-  updateSystemDict,
-  type SystemDictApi,
-} from '#/api/system/dict';
+import { createSystemDict, updateSystemDict } from '#/api/system/dict';
+
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -26,15 +27,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const values = await formApi.getValues();
     drawerApi.lock();
     try {
-      if (id.value) {
-        await updateSystemDict(id.value, values);
-      } else {
-        await createSystemDict(values);
-      }
+      await (id.value
+        ? updateSystemDict(id.value, values)
+        : createSystemDict(values));
       emits('success');
       drawerApi.close();
-    } catch (error) {
-    } finally {
+    } catch {} finally {
       drawerApi.unlock();
     }
   },

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
+import type { ApiTestApi } from '#/api/business/api_test';
+
 import { computed, ref } from 'vue';
+
 import { useVbenDrawer } from '@vben/common-ui';
+
 import { useVbenForm } from '#/adapter/form';
-import {
-  createTestCase,
-  updateTestCase,
-  type ApiTestApi,
-} from '#/api/business/api_test';
+import { createTestCase, updateTestCase } from '#/api/business/api_test';
+
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -26,15 +27,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const values = await formApi.getValues();
     drawerApi.lock();
     try {
-      if (id.value) {
-        await updateTestCase(id.value, values);
-      } else {
-        await createTestCase(values);
-      }
+      await (id.value
+        ? updateTestCase(id.value, values)
+        : createTestCase(values));
       emits('success');
       drawerApi.close();
-    } catch (error) {
-    } finally {
+    } catch {} finally {
       drawerApi.unlock();
     }
   },

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
+import type { SystemMenuApi } from '#/api/system/menu';
+
 import { computed, ref } from 'vue';
+
 import { useVbenDrawer } from '@vben/common-ui';
+
 import { useVbenForm } from '#/adapter/form';
-import {
-  createSystemMenu,
-  updateSystemMenu,
-  type SystemMenuApi,
-} from '#/api/system/menu';
+import { createSystemMenu, updateSystemMenu } from '#/api/system/menu';
+
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -26,15 +27,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const values = await formApi.getValues();
     drawerApi.lock();
     try {
-      if (id.value) {
-        await updateSystemMenu(id.value, values);
-      } else {
-        await createSystemMenu(values);
-      }
+      await (id.value
+        ? updateSystemMenu(id.value, values)
+        : createSystemMenu(values));
       emits('success');
       drawerApi.close();
-    } catch (error) {
-    } finally {
+    } catch {} finally {
       drawerApi.unlock();
     }
   },

@@ -1,13 +1,14 @@
 <script lang="ts" setup>
+import type { SystemUserApi } from '#/api/system/user';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
+
 import { Button, message, Popconfirm, Space } from 'ant-design-vue';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  getSystemUserList,
-  deleteSystemUser,
-  type SystemUserApi,
-} from '#/api/system/user';
+import { deleteSystemUser, getSystemUserList } from '#/api/system/user';
+
 import { useColumns, useGridFormSchema } from './data';
 import UserForm from './modules/form.vue';
 
@@ -63,7 +64,7 @@ async function onDelete(row: SystemUserApi.User) {
     await deleteSystemUser(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {
+  } catch {
     // Error handled by interceptor
   }
 }

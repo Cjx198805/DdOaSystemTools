@@ -1,12 +1,13 @@
 <script lang="ts" setup>
+import type { SystemCompanyApi } from '#/api/system/company';
+
 import { computed, ref } from 'vue';
+
 import { useVbenDrawer } from '@vben/common-ui';
+
 import { useVbenForm } from '#/adapter/form';
-import {
-  createSystemCompany,
-  updateSystemCompany,
-  type SystemCompanyApi,
-} from '#/api/system/company';
+import { createSystemCompany, updateSystemCompany } from '#/api/system/company';
+
 import { useFormSchema } from '../data';
 
 const emits = defineEmits(['success']);
@@ -26,15 +27,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const values = await formApi.getValues();
     drawerApi.lock();
     try {
-      if (id.value) {
-        await updateSystemCompany(id.value, values);
-      } else {
-        await createSystemCompany(values);
-      }
+      await (id.value
+        ? updateSystemCompany(id.value, values)
+        : createSystemCompany(values));
       emits('success');
       drawerApi.close();
-    } catch (error) {
-    } finally {
+    } catch {} finally {
       drawerApi.unlock();
     }
   },

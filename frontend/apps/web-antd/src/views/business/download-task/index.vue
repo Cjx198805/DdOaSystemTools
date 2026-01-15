@@ -1,13 +1,17 @@
 <script lang="ts" setup>
+import type { BusinessDownloadApi } from '#/api/business/download';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
-import { Button, message, Popconfirm, Space, Progress } from 'ant-design-vue';
+
+import { Button, message, Popconfirm, Progress, Space } from 'ant-design-vue';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  getDownloadTaskList,
   deleteDownloadTask,
-  type BusinessDownloadApi,
+  getDownloadTaskList,
 } from '#/api/business/download';
+
 import { useColumns, useGridFormSchema } from './data';
 import DownloadForm from './modules/form.vue';
 
@@ -59,7 +63,7 @@ async function onDelete(row: BusinessDownloadApi.Task) {
     await deleteDownloadTask(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {}
+  } catch {}
 }
 
 function onDownloadResult(row: BusinessDownloadApi.Task) {

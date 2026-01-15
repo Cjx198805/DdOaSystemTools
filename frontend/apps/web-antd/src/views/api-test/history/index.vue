@@ -1,9 +1,14 @@
 <script lang="ts" setup>
+import type { ApiTestApi } from '#/api/business/api_test';
+
 import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
+
 import { Button, Modal } from 'ant-design-vue';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getTestHistoryList, type ApiTestApi } from '#/api/business/api_test';
+import { getTestHistoryList } from '#/api/business/api_test';
+
 import { useColumns } from './data';
 
 const [Grid, gridApi] = useVbenVxeGrid({

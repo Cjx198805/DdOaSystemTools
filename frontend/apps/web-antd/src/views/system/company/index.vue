@@ -1,13 +1,17 @@
 <script lang="ts" setup>
+import type { SystemCompanyApi } from '#/api/system/company';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
+
 import { Button, message, Popconfirm, Space } from 'ant-design-vue';
+
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  getSystemCompanyList,
   deleteSystemCompany,
-  type SystemCompanyApi,
+  getSystemCompanyList,
 } from '#/api/system/company';
+
 import { useColumns, useGridFormSchema } from './data';
 import CompanyForm from './modules/form.vue';
 
@@ -63,7 +67,7 @@ async function onDelete(row: SystemCompanyApi.Company) {
     await deleteSystemCompany(row.id);
     message.success('删除成功');
     onRefresh();
-  } catch (error) {}
+  } catch {}
 }
 </script>
 
