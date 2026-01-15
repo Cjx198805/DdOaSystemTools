@@ -1,12 +1,13 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/ddoalistdownload/backend/middleware"
 	"github.com/ddoalistdownload/backend/model"
 	"github.com/ddoalistdownload/backend/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 // UserController 用户控制器
@@ -19,6 +20,45 @@ func NewUserController() *UserController {
 	return &UserController{
 		userService: service.NewUserService(),
 	}
+}
+
+// GetCurrentUserInfo 获取当前登录用户信息
+func (c *UserController) GetCurrentUserInfo(ctx *gin.Context) {
+	// 从上下文获取用户ID
+	userID, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"code":    401,
+			"message": "未登录",
+			"data":    nil,
+		})
+		return
+	}
+
+	// 调用服务层获取详情
+	user, err := c.userService.Get(userID.(uint))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": err.Error(),
+			"data":    nil,
+		})
+		return
+	}
+
+	// 转换为 Vben Admin 期望的格式
+	ctx.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": "获取用户信息成功",
+		"data": gin.H{
+			"userId":   user.ID,
+			"username": user.Username,
+			"realName": user.Nickname,
+			"avatar":   "https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png",
+			"desc":     user.Email,
+			"roles":    []string{"admin"}, // 暂时硬编码
+		},
+	})
 }
 
 // List 获取用户列表
@@ -43,17 +83,17 @@ func (c *UserController) List(ctx *gin.Context) {
 	username := ctx.Query("username")
 	nickname := ctx.Query("nickname")
 	statusStr := ctx.Query("status")
-	
+
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page < 1 {
 		page = 1
 	}
-	
+
 	pageSize, err := strconv.Atoi(pageSizeStr)
 	if err != nil || pageSize < 1 {
 		pageSize = 10
 	}
-	
+
 	companyID := uint(0)
 	if companyIDStr != "" {
 		companyIDUint64, err := strconv.ParseUint(companyIDStr, 10, 32)
@@ -61,12 +101,12 @@ func (c *UserController) List(ctx *gin.Context) {
 			companyID = uint(companyIDUint64)
 		}
 	}
-	
+
 	status := -1
 	if statusStr != "" {
 		status, _ = strconv.Atoi(statusStr)
 	}
-	
+
 	// 调用服务层获取列表
 	users, total, err := c.userService.List(page, pageSize, companyID, username, nickname, status)
 	if err != nil {
@@ -77,7 +117,7 @@ func (c *UserController) List(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "获取用户列表成功",
@@ -111,7 +151,7 @@ func (c *UserController) Get(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层获取详情
 	user, err := c.userService.Get(uint(id))
 	if err != nil {
@@ -122,7 +162,7 @@ func (c *UserController) Get(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "获取用户详情成功",
@@ -150,7 +190,7 @@ func (c *UserController) Create(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层创建
 	if err := c.userService.Create(&user); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -160,10 +200,10 @@ func (c *UserController) Create(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 清空密码
 	user.Password = ""
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "创建用户成功",
@@ -193,7 +233,7 @@ func (c *UserController) Update(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 绑定请求参数
 	var user model.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
@@ -204,10 +244,10 @@ func (c *UserController) Update(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 设置ID
 	user.ID = uint(id)
-	
+
 	// 调用服务层更新
 	if err := c.userService.Update(&user); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -217,10 +257,10 @@ func (c *UserController) Update(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 清空密码
 	user.Password = ""
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "更新用户成功",
@@ -249,7 +289,7 @@ func (c *UserController) Delete(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层删除
 	if err := c.userService.Delete(uint(id)); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -259,7 +299,7 @@ func (c *UserController) Delete(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "删除用户成功",
@@ -289,9 +329,9 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 绑定请求参数
-	var req struct{
+	var req struct {
 		Password string `json:"password" binding:"required"`
 	}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -302,7 +342,7 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层重置密码
 	if err := c.userService.ResetPassword(uint(id), req.Password); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -312,7 +352,7 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "重置密码成功",
@@ -331,7 +371,7 @@ func (c *UserController) ResetPassword(ctx *gin.Context) {
 // @Router /api/v1/user/update-password [put]
 func (c *UserController) UpdatePassword(ctx *gin.Context) {
 	// 绑定请求参数
-	var req struct{
+	var req struct {
 		OldPassword string `json:"old_password" binding:"required"`
 		NewPassword string `json:"new_password" binding:"required"`
 	}
@@ -343,11 +383,11 @@ func (c *UserController) UpdatePassword(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 从上下文获取用户ID（实际项目中应该从JWT令牌或会话中获取）
 	// 这里简化处理，假设用户ID为1
 	userID := uint(1)
-	
+
 	// 调用服务层更新密码
 	if err := c.userService.UpdatePassword(userID, req.OldPassword, req.NewPassword); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -357,7 +397,7 @@ func (c *UserController) UpdatePassword(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "更新密码成功",
@@ -386,7 +426,7 @@ func (c *UserController) GetRoles(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层获取角色
 	roles, err := c.userService.GetRoles(uint(id))
 	if err != nil {
@@ -397,7 +437,7 @@ func (c *UserController) GetRoles(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "获取用户角色成功",
@@ -427,9 +467,9 @@ func (c *UserController) AssignRoles(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 绑定请求参数
-	var req struct{
+	var req struct {
 		RoleIDs []uint `json:"role_ids" binding:"required"`
 	}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -440,7 +480,7 @@ func (c *UserController) AssignRoles(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层分配角色
 	if err := c.userService.AssignRoles(uint(id), req.RoleIDs); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -450,7 +490,7 @@ func (c *UserController) AssignRoles(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "分配角色成功",
@@ -469,7 +509,7 @@ func (c *UserController) AssignRoles(ctx *gin.Context) {
 // @Router /api/v1/user/login [post]
 func (c *UserController) Login(ctx *gin.Context) {
 	// 绑定请求参数
-	var req struct{
+	var req struct {
 		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
 	}
@@ -481,7 +521,7 @@ func (c *UserController) Login(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层登录
 	user, roleIDs, err := c.userService.Login(req.Username, req.Password)
 	if err != nil {
@@ -492,7 +532,7 @@ func (c *UserController) Login(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 生成JWT令牌
 	token, err := middleware.GenerateToken(user.ID, user.Username, roleIDs)
 	if err != nil {
@@ -503,7 +543,7 @@ func (c *UserController) Login(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "登录成功",

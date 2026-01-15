@@ -174,6 +174,7 @@ func registerRoutes(router *gin.Engine) {
 
 			// 用户管理
 			user := authAPI.Group("/user")
+			user.GET("/info", userController.GetCurrentUserInfo)
 			user.Use(middleware.PermissionMiddleware("user:manage"))
 			user.GET("", userController.List)
 			user.POST("", userController.Create)
@@ -206,7 +207,7 @@ func registerRoutes(router *gin.Engine) {
 			menu.DELETE("/:id", menuController.Delete)
 			menu.GET("/tree", menuController.GetTree)
 			menu.GET("/parent/:parent_id", menuController.GetByParentID)
-			menu.GET("/all", menuController.GetAll)
+			menu.GET("/all", menuController.GetVbenTree)
 
 			// 字段权限管理
 			fieldPermission := authAPI.Group("/field-permission")

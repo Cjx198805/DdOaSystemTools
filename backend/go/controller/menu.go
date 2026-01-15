@@ -1,11 +1,12 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/ddoalistdownload/backend/model"
 	"github.com/ddoalistdownload/backend/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 // MenuController 菜单控制器
@@ -40,22 +41,22 @@ func (c *MenuController) List(ctx *gin.Context) {
 	name := ctx.Query("name")
 	path := ctx.Query("path")
 	statusStr := ctx.Query("status")
-	
+
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page < 1 {
 		page = 1
 	}
-	
+
 	pageSize, err := strconv.Atoi(pageSizeStr)
 	if err != nil || pageSize < 1 {
 		pageSize = 10
 	}
-	
+
 	status := -1
 	if statusStr != "" {
 		status, _ = strconv.Atoi(statusStr)
 	}
-	
+
 	// 调用服务层获取列表
 	menus, total, err := c.menuService.List(page, pageSize, name, path, status)
 	if err != nil {
@@ -66,7 +67,7 @@ func (c *MenuController) List(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "获取菜单列表成功",
@@ -100,7 +101,7 @@ func (c *MenuController) Get(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层获取详情
 	menu, err := c.menuService.Get(uint(id))
 	if err != nil {
@@ -111,7 +112,7 @@ func (c *MenuController) Get(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "获取菜单详情成功",
@@ -139,7 +140,7 @@ func (c *MenuController) Create(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层创建
 	if err := c.menuService.Create(&menu); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -149,7 +150,7 @@ func (c *MenuController) Create(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "创建菜单成功",
@@ -179,7 +180,7 @@ func (c *MenuController) Update(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 绑定请求参数
 	var menu model.Menu
 	if err := ctx.ShouldBindJSON(&menu); err != nil {
@@ -190,10 +191,10 @@ func (c *MenuController) Update(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 设置ID
 	menu.ID = uint(id)
-	
+
 	// 调用服务层更新
 	if err := c.menuService.Update(&menu); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -203,7 +204,7 @@ func (c *MenuController) Update(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "更新菜单成功",
@@ -232,7 +233,7 @@ func (c *MenuController) Delete(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层删除
 	if err := c.menuService.Delete(uint(id)); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -242,7 +243,7 @@ func (c *MenuController) Delete(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "删除菜单成功",
@@ -269,12 +270,75 @@ func (c *MenuController) GetTree(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "获取菜单树形结构成功",
 		"data":    tree,
 	})
+}
+
+// GetVbenTree 获取 Vben Admin 兼容的菜单树
+func (c *MenuController) GetVbenTree(ctx *gin.Context) {
+	menus, err := c.menuService.GetAll(1) // 获取所有启用的菜单
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": err.Error(),
+			"data":    nil,
+		})
+		return
+	}
+
+	// 转换为 Vben 格式
+	vbenMenus := c.convertToVbenMenu(menus)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": "获取 Vben 菜单成功",
+		"data":    vbenMenus,
+	})
+}
+
+func (c *MenuController) convertToVbenMenu(menus []model.Menu) []map[string]interface{} {
+	// 构建 ID 映射
+	menuMap := make(map[uint]map[string]interface{})
+	var rootMenus []map[string]interface{}
+
+	for _, m := range menus {
+		item := map[string]interface{}{
+			"path":      m.Path,
+			"name":      m.Name,
+			"component": m.Component,
+			"meta": map[string]interface{}{
+				"title": m.Name,
+				"icon":  m.Icon,
+				"order": m.Sort,
+			},
+		}
+		// 如果是顶级菜单且有子菜单，Vben 通常要求 component 为 BasicLayout
+		if m.ParentID == 0 && m.Component == "" {
+			item["component"] = "BasicLayout"
+		}
+
+		menuMap[m.ID] = item
+	}
+
+	for _, m := range menus {
+		item := menuMap[m.ID]
+		if m.ParentID == 0 {
+			rootMenus = append(rootMenus, item)
+		} else {
+			if parent, ok := menuMap[m.ParentID]; ok {
+				if parent["children"] == nil {
+					parent["children"] = []map[string]interface{}{}
+				}
+				parent["children"] = append(parent["children"].([]map[string]interface{}), item)
+			}
+		}
+	}
+
+	return rootMenus
 }
 
 // GetByParentID 根据父ID获取子菜单
@@ -298,7 +362,7 @@ func (c *MenuController) GetByParentID(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 调用服务层获取子菜单
 	menus, err := c.menuService.GetByParentID(uint(parentID))
 	if err != nil {
@@ -309,7 +373,7 @@ func (c *MenuController) GetByParentID(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "获取子菜单成功",
@@ -329,12 +393,12 @@ func (c *MenuController) GetByParentID(ctx *gin.Context) {
 func (c *MenuController) GetAll(ctx *gin.Context) {
 	// 获取状态参数
 	statusStr := ctx.Query("status")
-	
+
 	status := -1
 	if statusStr != "" {
 		status, _ = strconv.Atoi(statusStr)
 	}
-	
+
 	// 调用服务层获取所有菜单
 	menus, err := c.menuService.GetAll(status)
 	if err != nil {
@@ -345,7 +409,7 @@ func (c *MenuController) GetAll(ctx *gin.Context) {
 		})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "获取所有菜单成功",

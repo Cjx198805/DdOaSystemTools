@@ -90,27 +90,27 @@ func SeedData() error {
 
 	systemMenus := []MenuNode{
 		{
-			Name: "系统管理", Path: "/system", Component: "Layout", Icon: "setting", Sort: 1, Type: 1,
+			Name: "系统管理", Path: "/system", Component: "BasicLayout", Icon: "setting", Sort: 1, Type: 1,
 			Children: []MenuNode{
-				{Name: "用户管理", Path: "user", Component: "system/user/index", Icon: "user", Sort: 1, Type: 1},
-				{Name: "角色管理", Path: "role", Component: "system/role/index", Icon: "peoples", Sort: 2, Type: 1},
-				{Name: "菜单管理", Path: "menu", Component: "system/menu/index", Icon: "tree-table", Sort: 3, Type: 1},
-				{Name: "公司管理", Path: "company", Component: "system/company/index", Icon: "tree", Sort: 4, Type: 1},
-				{Name: "字段权限", Path: "field-permission", Component: "system/field-permission/index", Icon: "lock", Sort: 5, Type: 1},
-				{Name: "数据字典", Path: "dict", Component: "system/dict/index", Icon: "list", Sort: 6, Type: 1},
+				{Name: "用户管理", Path: "/system/user", Component: "/system/user/index", Icon: "user", Sort: 1, Type: 1},
+				{Name: "角色管理", Path: "/system/role", Component: "/system/role/index", Icon: "peoples", Sort: 2, Type: 1},
+				{Name: "菜单管理", Path: "/system/menu", Component: "/system/menu/index", Icon: "tree-table", Sort: 3, Type: 1},
+				{Name: "公司管理", Path: "/system/company", Component: "/system/company/index", Icon: "tree", Sort: 4, Type: 1},
+				{Name: "字段权限", Path: "/system/field-permission", Component: "/system/field-permission/index", Icon: "lock", Sort: 5, Type: 1},
+				{Name: "数据字典", Path: "/system/dict", Component: "/system/dict/index", Icon: "list", Sort: 6, Type: 1},
 			},
 		},
 		{
-			Name: "业务功能", Path: "/business", Component: "Layout", Icon: "component", Sort: 2, Type: 1,
+			Name: "业务功能", Path: "/business", Component: "BasicLayout", Icon: "component", Sort: 2, Type: 1,
 			Children: []MenuNode{
-				{Name: "下载任务", Path: "download-task", Component: "business/download-task/index", Icon: "download", Sort: 1, Type: 1},
+				{Name: "下载任务", Path: "/business/download-task", Component: "/business/download-task/index", Icon: "download", Sort: 1, Type: 1},
 			},
 		},
 		{
-			Name: "API测试", Path: "/api-test", Component: "Layout", Icon: "bug", Sort: 3, Type: 1,
+			Name: "API测试", Path: "/api-test", Component: "BasicLayout", Icon: "bug", Sort: 3, Type: 1,
 			Children: []MenuNode{
-				{Name: "测试用例", Path: "case", Component: "api-test/case/index", Icon: "file-text", Sort: 1, Type: 1},
-				{Name: "测试历史", Path: "history", Component: "api-test/history/index", Icon: "history", Sort: 2, Type: 1},
+				{Name: "测试用例", Path: "/api-test/case", Component: "/api-test/case/index", Icon: "file-text", Sort: 1, Type: 1},
+				{Name: "测试历史", Path: "/api-test/history", Component: "/api-test/history/index", Icon: "history", Sort: 2, Type: 1},
 			},
 		},
 	}

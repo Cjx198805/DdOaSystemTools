@@ -1,304 +1,157 @@
-# DdOaListDownload 前端应用开发文档
+<div align="center">
+  <a href="https://github.com/anncwb/vue-vben-admin">
+    <img alt="VbenAdmin Logo" width="215" src="https://unpkg.com/@vbenjs/static-source@0.1.7/source/logo-v1.webp">
+  </a>
+  <br>
+  <br>
 
-## 项目概述
+[![license](https://img.shields.io/github/license/anncwb/vue-vben-admin.svg)](LICENSE)
 
-DdOaListDownload 是一套完整的钉钉 API 对接系统，前端采用 Vue 3 + Vite 开发，支持集团公司多级管理架构，提供权限管理、API 测试、下载任务管理等核心功能。
+  <h1>Vue Vben Admin</h1>
+</div>
 
-## 技术栈
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vbenjs_vue-vben-admin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vbenjs_vue-vben-admin) [![codeql](https://github.com/vbenjs/vue-vben-admin/actions/workflows/codeql.yml/badge.svg)](https://github.com/vbenjs/vue-vben-admin/actions/workflows/codeql.yml) [![build](https://github.com/vbenjs/vue-vben-admin/actions/workflows/build.yml/badge.svg)](https://github.com/vbenjs/vue-vben-admin/actions/workflows/build.yml) [![ci](https://github.com/vbenjs/vue-vben-admin/actions/workflows/ci.yml/badge.svg)](https://github.com/vbenjs/vue-vben-admin/actions/workflows/ci.yml) [![deploy](https://github.com/vbenjs/vue-vben-admin/actions/workflows/deploy.yml/badge.svg)](https://github.com/vbenjs/vue-vben-admin/actions/workflows/deploy.yml)
 
-- **框架**: Vue 3 (Composition API)
-- **构建工具**: Vite
-- **状态管理**: Pinia
-- **路由**: Vue Router
-- **HTTP 客户端**: Axios
-- **CSS 预处理器**: 原生 CSS (支持 CSS 变量和模块化)
+**English** | [中文](./README.zh-CN.md) | [日本語](./README.ja-JP.md)
 
-## 项目结构
+## Introduction
 
-```
-frontend/
-├── src/
-│   ├── api/              # API 调用模块
-│   ├── components/       # 通用组件
-│   ├── views/            # 页面组件
-│   │   ├── auth/         # 认证相关页面
-│   │   ├── permission/   # 权限管理页面
-│   │   ├── api/          # API 测试页面
-│   │   └── download/     # 下载任务页面
-│   ├── router/           # 路由配置
-│   ├── store/            # 状态管理
-│   ├── utils/            # 工具函数
-│   ├── App.vue           # 根组件
-│   └── main.js           # 入口文件
-├── index.html            # HTML 模板
-├── vite.config.js        # Vite 配置
-└── package.json         # 项目依赖
-```
+Vue Vben Admin is a free and open source middle and back-end template. Using the latest `vue3`, `vite`, `TypeScript` and other mainstream technology development, the out-of-the-box middle and back-end front-end solutions can also be used for learning reference.
 
-## 功能模块
+## Upgrade Notice
 
-### 1. 权限管理
+This is the latest version, 5.0, and it is not compatible with previous versions. If you are starting a new project, it is recommended to use the latest version. If you wish to view the old version, please use the [v2 branch](https://github.com/vbenjs/vue-vben-admin/tree/v2).
 
-#### 用户管理
-- 用户列表展示
-- 用户创建、编辑、删除
-- 多角色分配
-- 用户状态管理
+## Features
 
-#### 角色管理
-- 角色列表展示
-- 角色创建、编辑、删除
-- 菜单权限配置
+- **Latest Technology Stack**: Developed with cutting-edge front-end technologies like Vue 3 and Vite
+- **TypeScript**: A language for application-scale JavaScript
+- **Themes**: Multiple theme colors available with customizable options
+- **Internationalization**: Comprehensive built-in internationalization support
+- **Permissions**: Built-in solution for dynamic route-based permission generation
 
-#### 字段权限设置
-- 字段权限列表
-- 字段权限编辑
-- 角色字段权限管理
+## Preview
 
-#### 数据字典管理
-- 数据字典列表
-- 字典项管理
-- 字典状态管理
+- [Vben Admin](https://vben.pro/) - Full version Chinese site
 
-### 2. API 测试
+Test Account: vben/123456
 
-#### API 测试
-- 支持多种 HTTP 方法（GET、POST、PUT、DELETE）
-- 动态请求参数配置
-- 请求头管理
-- 请求体编辑
-- 实时测试结果展示
+<div align="center">
+  <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview1.png">
+  <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview2.png">
+  <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview3.png">
+</div>
 
-#### 测试用例管理
-- 测试用例列表
-- 测试用例创建、编辑、删除
-- 测试用例执行
+### Use Gitpod
 
-#### 测试历史记录
-- 测试历史列表
-- 测试结果查看
-- 历史记录搜索
+Open the project in Gitpod (free online dev environment for GitHub) and start coding immediately.
 
-### 3. 下载任务
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vbenjs/vue-vben-admin)
 
-#### 任务管理
-- 任务列表展示
-- 任务创建
-- 任务状态管理
+## Documentation
 
-#### 任务进度
-- 实时进度展示
-- 进度更新机制
+[Document](https://doc.vben.pro/)
 
-#### 结果下载
-- 支持多种格式下载（Excel、CSV、JSON）
-- 下载历史记录
+## Install and Use
 
-## 开发流程
-
-### 1. 环境搭建
+1. Get the project code
 
 ```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 构建生产版本
-npm run build
-
-# 预览生产构建
-npm run preview
+git clone https://github.com/vbenjs/vue-vben-admin.git
 ```
 
-### 2. 代码规范
+2. Install dependencies
 
-- 使用 Vue 3 Composition API
-- 组件设计遵循单一职责原则
-- 状态管理使用 Pinia
-- 路由配置使用 Vue Router
-- API 调用封装在单独的模块中
-- CSS 使用模块化和 CSS 变量
-
-### 3. API 集成
-
-所有 API 调用都封装在 `src/api` 目录下，每个模块对应一个 API 文件。API 调用使用 Axios，配置了请求拦截器和响应拦截器，统一处理认证和错误。
-
-### 4. 权限控制
-
-- 路由权限控制：通过路由守卫实现
-- 页面权限控制：通过组件内的权限判断实现
-- 字段权限控制：通过字段级权限配置实现
-
-## API 集成文档
-
-### 1. API 基础配置
-
-```javascript
-// src/api/index.js
-import axios from 'axios'
-
-const service = axios.create({
-  baseURL: '/api',
-  timeout: 10000
-})
-
-// 请求拦截器
-service.interceptors.request.use(
-  config => {
-    // 添加认证 token
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
-    }
-    return config
-  },
-  error => {
-    return Promise.reject(error)
-  }
-)
-
-// 响应拦截器
-service.interceptors.response.use(
-  response => {
-    const res = response.data
-    if (res.code !== 200) {
-      // 处理错误
-      return Promise.reject(new Error(res.message || 'Error'))
-    } else {
-      return res
-    }
-  },
-  error => {
-    return Promise.reject(error)
-  }
-)
+```bash
+cd vue-vben-admin
+npm i -g corepack
+pnpm install
 ```
 
-### 2. API 模块
+3. Run
 
-| 模块 | 文件 | 主要功能 |
-| --- | --- | --- |
-| 认证 | auth.js | 登录、退出、获取用户信息 |
-| 用户管理 | user.js | 用户列表、创建、编辑、删除 |
-| 角色管理 | role.js | 角色列表、创建、编辑、删除、权限配置 |
-| 字段权限 | fieldPermission.js | 字段权限列表、编辑、角色字段权限管理 |
-| 数据字典 | dataDictionary.js | 数据字典列表、创建、编辑、删除 |
-| API 测试 | apiTest.js | 测试执行、测试用例管理、测试历史 |
-| 下载任务 | download.js | 任务列表、创建、执行、下载结果 |
+```bash
+pnpm dev
+```
 
-## 功能使用说明
+4. Build
 
-### 1. 权限管理
+```bash
+pnpm build
+```
 
-#### 用户管理
-1. 进入「权限管理」->「用户管理」页面
-2. 点击「添加用户」按钮创建新用户
-3. 填写用户信息并分配角色
-4. 点击「保存」按钮完成创建
-5. 在用户列表中可以编辑或删除用户
+## Change Log
 
-#### 角色管理
-1. 进入「权限管理」->「角色管理」页面
-2. 点击「添加角色」按钮创建新角色
-3. 填写角色信息
-4. 点击「权限设置」按钮配置菜单权限
-5. 在角色列表中可以编辑或删除角色
+[CHANGELOG](https://github.com/vbenjs/vue-vben-admin/releases)
 
-### 2. API 测试
+## How to Contribute
 
-#### 执行 API 测试
-1. 进入「API 测试」->「API 测试」页面
-2. 选择 HTTP 方法（GET、POST、PUT、DELETE）
-3. 输入 API URL
-4. 配置请求参数和请求头
-5. 输入请求体（如果需要）
-6. 点击「运行测试」按钮执行测试
-7. 查看测试结果
+You are very welcome to join! [Raise an issue](https://github.com/anncwb/vue-vben-admin/issues/new/choose) or submit a Pull Request.
 
-#### 管理测试用例
-1. 进入「API 测试」->「测试用例管理」页面
-2. 点击「添加测试用例」按钮创建新用例
-3. 填写测试用例信息
-4. 在测试用例列表中可以执行、编辑或删除用例
+**Pull Request Process:**
 
-### 3. 下载任务
+1. Fork the code
+2. Create your branch: `git checkout -b feat/xxxx`
+3. Submit your changes: `git commit -am 'feat(function): add xxxxx'`
+4. Push your branch: `git push origin feat/xxxx`
+5. Submit `pull request`
 
-#### 创建下载任务
-1. 进入「下载任务」->「任务管理」页面
-2. 点击「创建新任务」按钮
-3. 填写任务信息
-4. 选择下载格式
-5. 点击「提交」按钮创建任务
+## Git Contribution Submission Specification
 
-#### 查看任务进度
-1. 在任务列表中查看任务进度
-2. 已完成的任务可以点击「下载」按钮下载结果
-3. 可以删除已完成的任务
+Reference [vue](https://github.com/vuejs/vue/blob/dev/.github/COMMIT_CONVENTION.md) specification ([Angular](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular))
 
-## 开发规范
+- `feat` Add new features
+- `fix` Fix the problem/BUG
+- `style` The code style is related and does not affect the running result
+- `perf` Optimization/performance improvement
+- `refactor` Refactor
+- `revert` Undo edit
+- `test` Test related
+- `docs` Documentation/notes
+- `chore` Dependency update/scaffolding configuration modification etc.
+- `ci` Continuous integration
+- `types` Type definition file changes
 
-### 1. 组件开发
+## Browser Support
 
-- 组件命名：PascalCase（如 `UserManagement.vue`）
-- 组件Props：使用类型检查
-- 组件事件：使用明确的事件名称
-- 组件样式：使用 scoped 样式
+The `Chrome 80+` browser is recommended for local development
 
-### 2. 代码风格
+Support modern browsers, not IE
 
-- 缩进：2 个空格
-- 变量命名：camelCase
-- 常量命名：UPPER_CASE_WITH_UNDERSCORES
-- 函数命名：camelCase
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
+| :-: | :-: | :-: | :-: |
+| last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
-### 3. 注释规范
+## Maintainer
 
-- 组件注释：包含组件功能、Props、Events
-- 函数注释：包含功能、参数、返回值
-- 复杂逻辑注释：解释代码逻辑
+[@Vben](https://github.com/anncwb)
 
-## 部署说明
+## Star History
 
-1. 构建生产版本：
-   ```bash
-   npm run build
-   ```
+[![Star History Chart](https://api.star-history.com/svg?repos=vbenjs/vue-vben-admin&type=Date)](https://star-history.com/#vbenjs/vue-vben-admin&Date)
 
-2. 将构建产物（`dist` 目录）部署到 Web 服务器
+## Donate
 
-3. 配置 Nginx 或其他 Web 服务器：
-   ```nginx
-   server {
-     listen 80;
-     server_name example.com;
-     root /path/to/dist;
-     index index.html;
-     
-     location / {
-       try_files $uri $uri/ /index.html;
-     }
-     
-     location /api {
-       proxy_pass http://localhost:8080;
-       proxy_set_header Host $host;
-       proxy_set_header X-Real-IP $remote_addr;
-     }
-   }
-   ```
+If you think this project is helpful to you, you can help the author buy a cup of coffee to show your support!
 
-## 版本历史
+![donate](https://unpkg.com/@vbenjs/static-source@0.1.7/source/sponsor.png)
 
-- v1.0.0 - 初始版本
-  - 实现权限管理功能
-  - 实现 API 测试功能
-  - 实现下载任务管理功能
-  - 支持响应式设计
-  - 集成后端 API
+<a style="display: block;width: 100px;height: 50px;line-height: 50px; color: #fff;text-align: center; background: #408aee;border-radius: 4px;" href="https://www.paypal.com/paypalme/cvvben">Paypal Me</a>
 
-## 作者信息
+## Contributors
 
-- 作者: cjx
-- 邮箱: xx4125517@126.com
-- 时间: 2025-12-22
+<a href="https://openomy.app/github/vbenjs/vue-vben-admin" target="_blank" style="display: block; width: 100%;" align="center">
+  <img src="https://openomy.app/svg?repo=vbenjs/vue-vben-admin&chart=bubble&latestMonth=3" target="_blank" alt="Contribution Leaderboard" style="display: block; width: 100%;" />
+ </a>
+
+<a href="https://github.com/vbenjs/vue-vben-admin/graphs/contributors">
+  <img alt="Contributors" src="https://contrib.rocks/image?repo=vbenjs/vue-vben-admin" />
+</a>
+
+## Discord
+
+- [Github Discussions](https://github.com/anncwb/vue-vben-admin/discussions)
+
+## License
+
+[MIT © Vben-2020](./LICENSE)
